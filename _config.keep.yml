@@ -1,6 +1,8 @@
 # 站点基础信息配置（Keep 主题要求放在 base_info 节点下）
 base_info:
   primary_color: "#0066CC"
+  title: "wzablog"
+  author: "wza"
   avatar: /img/bg.jpg
   logo: /img/bg.jpg
   favicon: /img/bg.jpg
@@ -14,5 +16,11 @@ menu:
 # 首页首屏背景图（需 enable: true 才会显示）
 first_screen:
   enable: true
-  background_img: /img/bg.jpg
-  background_img_dark: /img/bg.jpg
+  description: "this website is used to record|| my life and share interesting things"
+  background_img: /img/background.jpg
+  background_img_dark: /img/background.jpg
+
+inject:
+  enable: true
+  css:
+    - /css/custom.css

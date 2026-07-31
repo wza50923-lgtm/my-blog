@@ -1,0 +1,5 @@
+/* 覆盖首屏描述文字颜色为橙色（浅色+深色模式统一生效） */
+:root {
+  --first-screen-font-color-light: #FF8C00;
+  --first-screen-font-color-dark: #FF8C00;
+}
