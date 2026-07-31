@@ -1,15 +1,15 @@
-# Hexo Configuration
+﻿# Hexo Configuration
 ## Docs: https://hexo.io/docs/configuration.html
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
-description: ''
+title: 'my blog'
+subtitle: 'welcome to my blog'
+description: 'now no'
 keywords:
-author: John Doe
-language: en
-timezone: ''
+author: Wza
+language: zh-CN
+timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
@@ -29,6 +29,7 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
+  - 'gallery/**'
 
 # Writing
 new_post_name: :title.md # File name of new posts
@@ -96,7 +97,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: keep
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment

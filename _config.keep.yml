@@ -1,0 +1,8 @@
+# 1. 根层级配置头像（兼容旧版 Keep）
+avatar: /img/bg.jpg
+
+# 2. style 层级配置头像（兼容新版 Keep）
+style:
+  primary_color: "#0066CC"
+  avatar: /img/bg.jpg
+  favicon: /img/bg.jpg
