@@ -24,3 +24,12 @@ inject:
   enable: true
   css:
     - /css/custom.css
+
+comment:
+  enable: true
+  use: twikoo            # ⚠️ 关键点 1：Keep 主题用的是 `use`，不是 `type`！
+
+  twikoo:
+    env_id: https://twikoo-iota-ruby.vercel.app   # ⚠️ 关键点 2：这里是 `env_id`（带下划线），不是 `envId`！
+    region:
+    version: 1.6.39
