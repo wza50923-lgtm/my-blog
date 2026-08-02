@@ -338,6 +338,9 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 // ===== Supabase Config =====
 var SUPABASE_URL = 'https://dxfxkflqcjifrjqvgzeh.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4ZnhrZmxxY2ppZnJqcXZnemVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzM4MzcsImV4cCI6MjA5NzQ0OTgzN30.yjWjRdLT_qO3NlxqrKHJAxWFfhClDeolH1_CXRXnHRk';
+// 👇 【新增】保存登录凭证与你的管理员邮箱
+var AUTH_TOKEN = null;
+var ADMIN_EMAIL = 'wza50923@gmail.com'; // 👈 填入你在 Supabase 创建的管理员邮箱
 var BUCKET_NAME = 'photos';
 var STORAGE_URL = SUPABASE_URL + "/storage/v1";
 var MANIFEST_FILE = "manifest.json";
@@ -416,7 +419,7 @@ function saveManifest(cb){
   }
   var xhr = new XMLHttpRequest();
   xhr.open("POST", STORAGE_URL+"/object/"+BUCKET_NAME+"/"+MANIFEST_FILE, true);
-  xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+(AUTH_TOKEN || SUPABASE_KEY));
   xhr.setRequestHeader("Content-Type","application/json");
   xhr.setRequestHeader("x-upsert","true");
   xhr.onload = function(){ cb(xhr.status>=200&&xhr.status<300); };
@@ -560,15 +563,39 @@ function showPwdModal(cb){
 function closePwdModal(){ el.pwdOverlay.classList.remove("open"); pwdCallback = null; }
 
 el.pwdSubmit.addEventListener("click", function(){
-  if(el.pwdInput.value === "200910"){
-    var cb = pwdCallback;
-    closePwdModal();
-    if(cb) cb();
-  } else {
-    el.pwdErr.textContent = "密码错误，请重试";
-    el.pwdInput.value = "";
-    el.pwdInput.focus();
-  }
+  var pwd = el.pwdInput.value;
+  if(!pwd){ el.pwdErr.textContent = "请输入密码"; return; }
+
+  el.pwdErr.textContent = "正在验证...";
+
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", SUPABASE_URL + "/auth/v1/token?grant_type=password", true);
+  xhr.setRequestHeader("apikey", SUPABASE_KEY);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onload = function(){
+    if(xhr.status === 200){
+      try {
+        var res = JSON.parse(xhr.responseText);
+        AUTH_TOKEN = res.access_token; // 验证成功！拿到真正的登录 Token
+        var cb = pwdCallback;
+        closePwdModal();
+        if(cb) cb();
+      } catch(e){
+        el.pwdErr.textContent = "登录解析异常";
+      }
+    } else {
+      el.pwdErr.textContent = "密码错误，请重试";
+      el.pwdInput.value = "";
+      el.pwdInput.focus();
+    }
+  };
+  xhr.onerror = function(){
+    el.pwdErr.textContent = "网络请求失败";
+  };
+  xhr.send(JSON.stringify({
+    email: ADMIN_EMAIL,
+    password: pwd
+  }));
 });
 
 el.pwdCancel.addEventListener("click", closePwdModal);
