@@ -470,7 +470,7 @@ function uploadToSupabase(file, cb){
   var fn = Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+ext;
   var xhr = new XMLHttpRequest();
   xhr.open("POST", STORAGE_URL+"/object/"+BUCKET_NAME+"/"+fn, true);
-  xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+(AUTH_TOKEN || SUPABASE_KEY));
   xhr.setRequestHeader("Content-Type","image/jpeg");
   xhr.setRequestHeader("x-upsert","true");
   xhr.onload = function(){
@@ -761,7 +761,7 @@ function removeFromSupabase(m){
   if(!fn) return;
   var xhr=new XMLHttpRequest();
   xhr.open("DELETE",STORAGE_URL+"/object/"+BUCKET_NAME+"/"+fn,true);
-  xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+(AUTH_TOKEN || SUPABASE_KEY));
   xhr.setRequestHeader("Content-Type","application/json");
   xhr.onload=function(){
     if(xhr.status>=200&&xhr.status<300){
