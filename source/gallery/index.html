@@ -412,6 +412,9 @@ function loadLocalFallback(cb){
 }
 function saveManifest(cb){
   cb = cb || function(){};
+  // 【安全加固】写入相册列表(manifest.json)必须使用登录后的 AUTH_TOKEN
+  // 未登录直接拒绝，禁止降级为公开的 anon key（RLS 已禁止匿名写入）
+  if(!AUTH_TOKEN){ alert("请先登录管理员账号再保存"); cb(false); return; }
   var json = JSON.stringify(ms);
   if(!IS_CLOUD){
     try{localStorage.setItem("memoir_list",json);}catch(e){}
@@ -419,7 +422,8 @@ function saveManifest(cb){
   }
   var xhr = new XMLHttpRequest();
   xhr.open("POST", STORAGE_URL+"/object/"+BUCKET_NAME+"/"+MANIFEST_FILE, true);
-  xhr.setRequestHeader("Authorization","Bearer "+(AUTH_TOKEN || SUPABASE_KEY));
+  // 【安全加固】改用登录 token 发送请求（原来会降级成公开的 anon key）
+  xhr.setRequestHeader("Authorization","Bearer "+AUTH_TOKEN);
   xhr.setRequestHeader("Content-Type","application/json");
   xhr.setRequestHeader("x-upsert","true");
   xhr.onload = function(){ cb(xhr.status>=200&&xhr.status<300); };
@@ -466,11 +470,15 @@ function compressImage(file, cb){
 
 // ===== Upload =====
 function uploadToSupabase(file, cb){
+  // 【安全加固】上传图片必须携带登录后的 AUTH_TOKEN
+  // 未登录直接拒绝（原来用公开的 anon key，会被 RLS 拒绝且存在匿名写入风险）
+  if(!AUTH_TOKEN){ alert("请先登录管理员账号再上传"); cb("Not logged in"); return; }
   var ext = "jpg";
   var fn = Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+ext;
   var xhr = new XMLHttpRequest();
   xhr.open("POST", STORAGE_URL+"/object/"+BUCKET_NAME+"/"+fn, true);
-  xhr.setRequestHeader("Authorization","Bearer "+(AUTH_TOKEN || SUPABASE_KEY));
+  // 【安全加固】用登录 token 替代公开的 anon key 发送上传请求
+  xhr.setRequestHeader("Authorization","Bearer "+AUTH_TOKEN);
   xhr.setRequestHeader("Content-Type","image/jpeg");
   xhr.setRequestHeader("x-upsert","true");
   xhr.onload = function(){
@@ -754,6 +762,9 @@ el.adminSaveBtn.addEventListener("click",function(){
 });
 
 function removeFromSupabase(m){
+  // 【安全加固】删除云端图片必须携带登录后的 AUTH_TOKEN
+  // 未登录直接拒绝（原来用公开的 anon key，RLS 已禁止匿名删除）
+  if(!AUTH_TOKEN){ alert("请先登录管理员账号再删除"); return; }
   if(!m||!m.url) return;
   var p="/object/public/"+BUCKET_NAME+"/", i=m.url.indexOf(p);
   if(i<0) return;
@@ -761,7 +772,8 @@ function removeFromSupabase(m){
   if(!fn) return;
   var xhr=new XMLHttpRequest();
   xhr.open("DELETE",STORAGE_URL+"/object/"+BUCKET_NAME+"/"+fn,true);
-  xhr.setRequestHeader("Authorization","Bearer "+(AUTH_TOKEN || SUPABASE_KEY));
+  // 【安全加固】用登录 token 替代公开的 anon key 发送删除请求
+  xhr.setRequestHeader("Authorization","Bearer "+AUTH_TOKEN);
   xhr.setRequestHeader("Content-Type","application/json");
   xhr.onload=function(){
     if(xhr.status>=200&&xhr.status<300){

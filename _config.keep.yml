@@ -25,26 +25,11 @@ inject:
   css:
     - /css/custom.css
 
-<<<<<<< HEAD
-=======
-# ===================================================================
-# 评论系统配置
-# ===================================================================
-# ===================================================================
-# Keep 主题评论配置
-# ===================================================================
->>>>>>> 73e50c6 (feat: 配置 Twikoo 评论系统)
 comment:
   enable: true
   use: twikoo            # ⚠️ 关键点 1：Keep 主题用的是 `use`，不是 `type`！
 
   twikoo:
-<<<<<<< HEAD
     env_id: https://heartfelt-swan-2bffd0.netlify.app/.netlify/functions/twikoo   # ⚠️ 关键点 2：这里是 `env_id`（带下划线），不是 `envId`！
     region:
     version: 1.6.39
-=======
-    env_id: https://twikoo-iota-ruby.vercel.app   # ⚠️ 关键点 2：这里是 `env_id`（带下划线），不是 `envId`！
-    region:
-    version: 1.6.39
->>>>>>> 73e50c6 (feat: 配置 Twikoo 评论系统)
