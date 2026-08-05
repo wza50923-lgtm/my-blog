@@ -357,12 +357,12 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <button class="nav-btn nav-next" id="navNext">&#8250;</button>
 <button class="upload-btn" id="uploadBtn" title="上传回忆">+</button>
 <button class="manage-btn" id="manageBtn" title="管理回忆">&#9881;</button>
-<input type="file" id="fileInput" accept="image/*" style="display:none">
+<input type="file" id="fileInput" accept="image/*" multiple style="display:none">
 </div>
 
 <div class="compressing" id="compressingOverlay">
 <div class="spinner"></div>
-<p>正在压缩图片...</p>
+<p id="compressingText">正在处理...</p>
 </div>
 
 <div class="modal-overlay" id="adminPanel">
@@ -398,7 +398,7 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <input type="date" id="dateInput">
 </div>
 <div class="form-group flex-1">
-<label>上传图片（自动压缩至1-2MB）</label>
+<label>上传图片（可多选，自动压缩）</label>
 <div id="uploadArea" style="padding:9px 12px;background:rgba(26,20,16,0.5);border:1px dashed rgba(196,169,125,0.2);border-radius:4px;color:#6a5535;font-size:13px;text-align:center;cursor:pointer">点击选择图片</div>
 </div>
 </div>
@@ -470,10 +470,10 @@ var SD = [
 
 var ms = [], ci = 0, deleteTarget = null, previewTarget = -1, pwdCallback = null;
 var curCat = "全部", catList = ["全部"], view = [], catOrder = [], catBold = [], catChildren = {}, expandedCats = {};
-var el = {}, selectedFile = null;
+var el = {}, selectedFiles = [];
 var IS_CLOUD = true;
 
-var ids = ["currentImg","prevImg","nextImg","photoTitle","photoDate","yearLabel","lightLeak","bgLayer","counter","photoFrame","timelineDots","shutterFlash","particleCanvas","navPrev","navNext","mainImage","uploadBtn","manageBtn","fileInput","uploadModal","modalClose","cancelBtn","submitBtn","titleInput","dateInput","uploadArea","adminPanel","adminClose","adminGrid","adminSaveBtn","adminCancelBtn","confirmDialog","confirmCancel","confirmOk","confirmMsg","compressingOverlay","previewOverlay","previewClose","previewImg","previewRotL","previewRotR","previewSave","pwdOverlay","pwdInput","pwdErr","pwdCancel","pwdSubmit","catSidebar","catList","catToggle","catMask","catManageList","catNewName","catCreateBtn","catInput"];
+var ids = ["currentImg","prevImg","nextImg","photoTitle","photoDate","yearLabel","lightLeak","bgLayer","counter","photoFrame","timelineDots","shutterFlash","particleCanvas","navPrev","navNext","mainImage","uploadBtn","manageBtn","fileInput","uploadModal","modalClose","cancelBtn","submitBtn","titleInput","dateInput","uploadArea","adminPanel","adminClose","adminGrid","adminSaveBtn","adminCancelBtn","confirmDialog","confirmCancel","confirmOk","confirmMsg","compressingOverlay","previewOverlay","previewClose","previewImg","previewRotL","previewRotR","previewSave","pwdOverlay","pwdInput","pwdErr","pwdCancel","pwdSubmit","catSidebar","catList","catToggle","catMask","catManageList","catNewName","catCreateBtn","catInput","compressingText"];
 ids.forEach(function(id){el[id]=document.getElementById(id);});
 
 // ===== Init =====
@@ -1133,7 +1133,7 @@ el.pwdInput.addEventListener("keydown", function(e){
 
 function openUpload(){
   showPwdModal(function(){
-    selectedFile=null; el.titleInput.value="";
+    selectedFiles=[]; el.titleInput.value="";
     el.dateInput.value=new Date().toISOString().split("T")[0];
     if(!el.catInput._sel) el.catInput._sel=makeCatPair(el.catInput,"未分类",function(){});
     el.catInput._sel.setValue("未分类");el.catInput._sel.refresh();
@@ -1149,34 +1149,58 @@ el.cancelBtn.addEventListener("click",closeUpload);
 el.uploadModal.addEventListener("click",function(e){if(e.target===e.currentTarget)closeUpload();});
 el.uploadArea.addEventListener("click",function(){el.fileInput.click();});
 el.fileInput.addEventListener("change",function(e){
-  var f=e.target.files[0]; if(!f) return;
-  selectedFile=f;
-  var mb=Math.round(f.size/1024/1024*10)/10;
-  el.uploadArea.textContent=f.name+" ("+mb+"MB -> 自动压缩)";
+  var files=Array.prototype.slice.call(e.target.files||[]).filter(function(f){return f&&f.type.indexOf("image/")===0;});
+  if(!files.length) return;
+  selectedFiles=files;
+  var mb=Math.round(files[0].size/1024/1024*10)/10;
+  el.uploadArea.textContent=files.length>1?("已选择 "+files.length+" 张图片"):(files[0].name+" ("+mb+"MB -> 自动压缩)");
   el.uploadArea.style.borderColor="rgba(196,169,125,0.5)";
-  if(!el.titleInput.value.trim()) el.titleInput.value=f.name.replace(/\..+$/,"");
+  if(files.length===1&&!el.titleInput.value.trim()) el.titleInput.value=files[0].name.replace(/\..+$/,"");
 });
 
 el.submitBtn.addEventListener("click",function(){
   var title=el.titleInput.value.trim()||"未命名";
   var date=el.dateInput.value;
-  if(!selectedFile){alert("请先选择一张图片");return;}
-  el.submitBtn.textContent="压缩中..."; el.submitBtn.disabled=true;
+  if(!selectedFiles.length){alert("请先选择图片");return;}
+  var total=selectedFiles.length,done=0,failed=0,idx=0;
+  var cat=(el.catInput&&el.catInput._sel)?(el.catInput._sel.value()||"未分类"):"未分类";
+  el.submitBtn.textContent="处理中 0/"+total; el.submitBtn.disabled=true;
   el.compressingOverlay.classList.add("show");
-  compressImage(selectedFile,function(err,cf,mb){
-    if(err){alert(err); el.submitBtn.textContent="确定上传"; el.submitBtn.disabled=false; el.compressingOverlay.classList.remove("show"); return;}
-    el.submitBtn.textContent="上传中 ("+mb+"MB)...";
-    uploadToSupabase(cf,function(err,url){
+  function next(){
+    if(idx>=total){
       el.compressingOverlay.classList.remove("show");
-      if(err){alert(err); el.submitBtn.textContent="确定上传"; el.submitBtn.disabled=false; return;}
-      ms.push({id:"m"+Date.now(), title:title, date:date, url:url, cat:(el.catInput&&el.catInput._sel)?(el.catInput._sel.value()||"未分类"):"未分类"});
-      saveManifest(function(){
-        renderTimeline(); goTo(ms.length-1);
-        closeUpload(); el.submitBtn.textContent="确定上传"; el.submitBtn.disabled=false;
-        selectedFile=null; el.fileInput.value="";
+      if(done>0){
+        saveManifest(function(){
+          renderTimeline(); goTo(ms.length-1);
+          closeUpload(); el.submitBtn.textContent="确定上传"; el.submitBtn.disabled=false;
+          selectedFiles=[]; el.fileInput.value="";
+          if(failed>0) alert("批量上传完成：成功 "+done+" 张，失败 "+failed+" 张");
+        });
+      }else{
+        el.submitBtn.textContent="确定上传"; el.submitBtn.disabled=false;
+        selectedFiles=[]; el.fileInput.value="";
+        alert("上传失败："+failed+" 张图片均未成功");
+      }
+      return;
+    }
+    var f=selectedFiles[idx];
+    el.compressingText.textContent="正在处理 "+(idx+1)+"/"+total;
+    el.submitBtn.textContent="处理中 "+(idx+1)+"/"+total;
+    compressImage(f,function(err,cf,mb){
+      if(err){failed++;idx++;next();return;}
+      el.compressingText.textContent="正在上传 "+(idx+1)+"/"+total;
+      el.submitBtn.textContent="上传中 "+(idx+1)+"/"+total;
+      uploadToSupabase(cf,function(err2,url){
+        if(err2){failed++;}else{
+          done++;
+          var t=(total===1)?title:f.name.replace(/\..+$/,"");
+          ms.push({id:"m"+Date.now()+"_"+idx, title:t, date:date, url:url, cat:cat});
+        }
+        idx++; next();
       });
     });
-  });
+  }
+  next();
 });
 
 // ===== Admin =====
@@ -1366,7 +1390,7 @@ function shutterFlash(){
 function startParticles(){
   var c=el.particleCanvas;if(!c)return;
   c.width=window.innerWidth;c.height=window.innerHeight;
-  var cx=c.getContext("2d");ps=[];
+  var cx=c.getContext("2d");var ps=[];
   for(var i=0;i<30;i++)ps.push({x:Math.random()*c.width,y:Math.random()*c.height,sz:Math.random()*2+0.5,sx:(Math.random()-0.5)*0.12,sy:-(Math.random()*0.08+0.02),op:Math.random()*0.2+0.03,hu:30+Math.random()*20});
   (function an(){cx.clearRect(0,0,c.width,c.height);
     ps.forEach(function(p){p.x+=p.sx;p.y+=p.sy;if(p.y<-10){p.y=c.height+10;p.x=Math.random()*c.width;}if(p.x<-10)p.x=c.width+10;if(p.x>c.width+10)p.x=-10;
