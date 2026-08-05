@@ -212,9 +212,116 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 .timeline-dot{width:5px;height:5px}
 .timeline-dot .dot-year{font-size:7px;bottom:8px}
 }
-</style>
+/* ===== 相册分类侧边栏 ===== */
+#catSidebar{position:fixed;left:0;top:0;bottom:0;width:150px;z-index:40;background:linear-gradient(180deg,rgba(26,20,16,0.95),rgba(18,13,10,0.98));border-right:1px solid rgba(196,169,125,0.14);display:flex;flex-direction:column;padding:24px 0 18px;overflow-y:auto;transform:translateX(-104%);transition:transform .28s ease;pointer-events:none}
+#catSidebar.open{transform:translateX(0);pointer-events:auto}
+.cat-header{font-size:12px;letter-spacing:4px;color:#a08970;text-align:center;padding:0 10px 14px;border-bottom:1px solid rgba(196,169,125,0.12);margin-bottom:12px;font-family:Georgia,serif}
+.cat-item{position:relative;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;margin:1px 10px;color:#8b7355;font-size:14px;letter-spacing:2px;cursor:pointer;border:1px solid transparent;border-radius:3px;transition:all .3s;font-family:Georgia,serif;user-select:none}
+.cat-item:hover{color:#d4c5a9;background:rgba(196,169,125,0.06)}
+.cat-item.active{color:#e8d5b0;background:rgba(196,169,125,0.12);border-color:rgba(196,169,125,0.25)}
+.cat-item.active::before{content:"";position:absolute;left:-10px;top:18%;bottom:18%;width:2px;background:#c4a97d}
+.cat-count{font-size:11px;color:#6a5535;background:rgba(196,169,125,0.08);border-radius:8px;padding:1px 7px;letter-spacing:0}
+.cat-item.active .cat-count{color:#c4a97d;background:rgba(196,169,125,0.18)}
+.cat-side-foot{margin-top:auto;text-align:center;font-size:10px;color:#5a4832;letter-spacing:3px;padding-top:12px}
+
+/* 平板适配 */
+@media(max-width:1024px){
+#catSidebar{width:110px}
+.cat-item{padding:9px 10px;font-size:13px;margin:1px 6px}
+.cat-item.active::before{left:-6px}
+.cat-toggle{display:block}
+}
+/* 手机适配：侧边栏收为顶部横排分类条 */
+@media(max-width:768px){
+#catSidebar{width:72%;max-width:250px;box-shadow:4px 0 24px rgba(0,0,0,0.5);padding:16px 0 12px}
+.cat-header{display:block}
+#catList{display:block}
+.cat-item{padding:9px 12px;font-size:13px;margin:1px 8px;border-radius:3px}
+.cat-item.active::before{display:block;left:-8px}
+.cat-count{font-size:11px}
+.cat-side-foot{display:block}
+
+}
+/* ===== 分类侧边栏开关与遮罩 ===== */
+.cat-toggle{position:fixed;left:10px;top:10px;z-index:50;display:block;background:rgba(26,20,16,0.75);border:1px solid rgba(196,169,125,0.25);color:#c4a97d;font-size:13px;letter-spacing:2px;padding:7px 12px;border-radius:4px;cursor:pointer;font-family:Georgia,serif;transition:all .3s}
+.cat-toggle:hover{background:rgba(196,169,125,0.15);color:#e8d5b0}
+.cat-mask{position:fixed;inset:0;z-index:38;background:rgba(10,7,5,0.45);opacity:0;visibility:hidden;transition:opacity .3s}
+.cat-mask.show{opacity:1;visibility:visible}
+/* ===== 管理面板分类管理 ===== */
+.cat-manage{margin:0 0 18px;padding:14px 16px;background:rgba(42,32,24,0.6);border:1px solid rgba(196,169,125,0.12);border-radius:6px}
+.cat-manage-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#e8d5b0;font-size:15px;letter-spacing:2px}
+.cat-manage-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed rgba(196,169,125,0.08)}
+.cat-manage-row:last-child{border-bottom:none}
+.cat-manage-row input{flex:1;min-width:0;padding:5px 8px;background:rgba(26,20,16,0.5);border:1px solid rgba(196,169,125,0.15);border-radius:3px;color:#d4c5a9;font-size:13px;outline:none}
+.cat-manage-row .cm-count{font-size:12px;color:#8b7355;white-space:nowrap}
+.cat-manage-row button{background:rgba(196,169,125,0.1);border:1px solid rgba(196,169,125,0.2);color:#c4a97d;padding:4px 10px;border-radius:3px;cursor:pointer;font-size:12px}
+.cat-manage-row button:hover{background:rgba(196,169,125,0.2)}
+.cat-manage-row .cm-del{background:rgba(180,80,60,0.15);border-color:rgba(180,80,60,0.3);color:#d48a6a}
+.admin-card-fields select{width:100%;margin-bottom:5px;padding:5px 8px;background:rgba(26,20,16,0.5);border:1px solid rgba(196,169,125,0.15);border-radius:3px;color:#d4c5a9;font-size:13px;outline:none}
+.cat-create{display:flex;gap:8px;margin-bottom:12px}
+.cat-create input{flex:1;min-width:0;padding:6px 10px;background:rgba(26,20,16,0.5);border:1px solid rgba(196,169,125,0.15);border-radius:3px;color:#d4c5a9;font-size:13px;outline:none}
+.cat-create button{background:rgba(196,169,125,0.12);border:1px solid rgba(196,169,125,0.25);color:#c4a97d;padding:6px 14px;border-radius:3px;cursor:pointer;font-size:13px;letter-spacing:1px}
+.cat-create button:hover{background:rgba(196,169,125,0.2)}
+/* ===== 管理面板全屏（仅改布局，内部功能不变） ===== */
+#adminPanel{flex-direction:column;align-items:stretch;background:rgba(15,11,8,0.96);backdrop-filter:blur(6px)}
+#adminPanel .admin-header,#adminPanel .admin-body,#adminPanel .admin-footer{width:100%;background:linear-gradient(180deg,rgba(24,18,13,0.97),rgba(16,12,9,0.98))}
+#adminPanel .admin-body{flex:1;min-height:0;overflow-y:auto}
+.cat-item.bold{font-weight:700;font-size:15px;color:#e8d5b0}
+.cm-bold-label{display:flex;align-items:center;gap:3px;font-size:12px;color:#8b7355;white-space:nowrap;cursor:pointer}
+.cm-bold-label input{accent-color:#c4a97d;margin:0}
+/* ===== 子分类层级 ===== */
+.cat-left{display:flex;align-items:center;min-width:0;overflow:hidden;gap:2px}
+.cat-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-arrow{font-size:10px;color:#6a5535;cursor:pointer;width:12px;flex:none;line-height:1;transition:color .3s}
+.cat-arrow:hover{color:#c4a97d}
+.cat-item.cat-child{padding-left:26px;font-size:13px}
+.cat-manage-row.cm-child{padding-left:26px}
+.cat-manage-row .cm-fold{font-size:11px;padding:4px 6px}
+.cat-manage-row .cm-sub{background:rgba(196,169,125,0.08);border-color:rgba(196,169,125,0.2);color:#c4a97d}
+.form-group select{width:100%;padding:8px 10px;background:rgba(26,20,16,0.5);border:1px solid rgba(196,169,125,0.15);border-radius:4px;color:#d4c5a9;font-size:14px;outline:none;font-family:Georgia,serif}
+/* ===== 自定义分类下拉 ===== */
+.cat-select{position:relative;width:100%}
+.cat-select-trigger{width:100%;padding:5px 8px;background:rgba(26,20,16,0.5);border:1px solid rgba(196,169,125,0.15);border-radius:3px;color:#d4c5a9;font-size:13px;outline:none;text-align:left;cursor:pointer;font-family:Georgia,serif}
+.cat-select-trigger:hover{border-color:rgba(196,169,125,0.35)}
+.cat-select-menu{position:absolute;top:calc(100% + 2px);left:0;right:0;z-index:120;background:rgba(30,23,17,0.98);border:1px solid rgba(196,169,125,0.25);border-radius:4px;max-height:220px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,0.45)}
+.cat-select.open .cat-select-menu{display:block}
+.cat-select-item{padding:7px 10px;color:#d4c5a9;font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid rgba(196,169,125,0.06)}
+.cat-select-item:hover{background:rgba(196,169,125,0.12)}
+.cat-select-item.selected{color:#e8d5b0;background:rgba(196,169,125,0.18)}
+.cat-select-item.cs-parent{font-weight:700}
+.cat-select-item.cs-child{padding-left:24px}
+.cat-pair-child{margin-top:5px}
+/* ===== 设置面板手机端适配 ===== */
+.cm-btns{display:flex;align-items:center;gap:8px}
+@media(max-width:768px){
+#adminPanel .admin-header{flex-direction:row;justify-content:space-between;align-items:center;padding:12px 14px}
+#adminPanel .admin-body{padding:12px}
+#adminPanel .admin-footer{padding:12px 14px}
+#adminPanel .admin-footer .btn{flex:1}
+.cat-manage{margin:0 0 12px;padding:12px}
+.cat-manage-row{flex-wrap:wrap;gap:6px}
+.cat-manage-row.cm-child{padding-left:12px}
+.cm-btns{flex:1 1 100%;justify-content:flex-end}
+.admin-card-fields{flex:1 1 150px}
+.admin-card-actions{margin-left:auto}
+.cat-select-menu{max-height:40vh}
+}
+@media(max-width:480px){
+.cat-manage{padding:10px}
+.cat-manage-row button{min-height:32px}
+.cat-manage-row.cm-child{padding-left:8px}
+.admin-card-thumb{width:36px;height:36px}
+.cm-count{font-size:11px}
+}</style>
 </head>
 <body>
+<div id="catSidebar">
+<div class="cat-header">相 册 分 类</div>
+<div id="catList"></div>
+<div class="cat-side-foot">时 光 回 忆 录</div>
+</div>
+<button class="cat-toggle" id="catToggle">&#9776; 分类</button>
+<div class="cat-mask" id="catMask"></div>
 <div id="app">
 <div class="bg-layer" id="bgLayer"></div>
 <div class="grain-overlay"></div>
@@ -264,8 +371,13 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <button class="admin-close" id="adminClose">&times;</button>
 </div>
 <div class="admin-body">
+<div class="cat-manage">
+<div class="cat-manage-header">分类管理</div>
+<div class="cat-create"><input id="catNewName" placeholder="输入新分类名称"><button id="catCreateBtn">创建</button></div>
+<div id="catManageList"></div>
+</div>
 <div class="admin-grid" id="adminGrid"></div>
-<div class="admin-footer" style="position:static;padding:16px 0 0;border:none">
+<div class="admin-footer">
 <button class="btn btn-cancel" id="adminCancelBtn">关闭</button>
 <button class="btn btn-submit" id="adminSaveBtn">保存更改</button>
 </div>
@@ -289,6 +401,10 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <label>上传图片（自动压缩至1-2MB）</label>
 <div id="uploadArea" style="padding:9px 12px;background:rgba(26,20,16,0.5);border:1px dashed rgba(196,169,125,0.2);border-radius:4px;color:#6a5535;font-size:13px;text-align:center;cursor:pointer">点击选择图片</div>
 </div>
+</div>
+<div class="form-group">
+<label>分类</label>
+<div id="catInput"></div>
 </div>
 <div class="modal-actions">
 <button class="btn btn-cancel" id="cancelBtn">取消</button>
@@ -347,22 +463,23 @@ var MANIFEST_FILE = "manifest.json";
 var MANIFEST_URL = STORAGE_URL + "/object/public/" + BUCKET_NAME + "/" + MANIFEST_FILE;
 
 var SD = [
-{"id":"s1","title":"0503","date":"2025-05-03","url":"250503.jpg"},
-{"id":"s2","title":"BBQ","date":"2025-08-20","url":"250820bbq.jpg"},
-{"id":"s3","title":"BBQ2","date":"2025-08-21","url":"250821bbq2.jpg"}
+{"id":"s1","title":"0503","date":"2025-05-03","url":"250503.jpg","cat":"旅行"},
+{"id":"s2","title":"BBQ","date":"2025-08-20","url":"250820bbq.jpg","cat":"日常"},
+{"id":"s3","title":"BBQ2","date":"2025-08-21","url":"250821bbq2.jpg","cat":"日常"}
 ];
 
 var ms = [], ci = 0, deleteTarget = null, previewTarget = -1, pwdCallback = null;
+var curCat = "全部", catList = ["全部"], view = [], catOrder = [], catBold = [], catChildren = {}, expandedCats = {};
 var el = {}, selectedFile = null;
 var IS_CLOUD = true;
 
-var ids = ["currentImg","prevImg","nextImg","photoTitle","photoDate","yearLabel","lightLeak","bgLayer","counter","photoFrame","timelineDots","shutterFlash","particleCanvas","navPrev","navNext","mainImage","uploadBtn","manageBtn","fileInput","uploadModal","modalClose","cancelBtn","submitBtn","titleInput","dateInput","uploadArea","adminPanel","adminClose","adminGrid","adminSaveBtn","adminCancelBtn","confirmDialog","confirmCancel","confirmOk","confirmMsg","compressingOverlay","previewOverlay","previewClose","previewImg","previewRotL","previewRotR","previewSave","pwdOverlay","pwdInput","pwdErr","pwdCancel","pwdSubmit"];
+var ids = ["currentImg","prevImg","nextImg","photoTitle","photoDate","yearLabel","lightLeak","bgLayer","counter","photoFrame","timelineDots","shutterFlash","particleCanvas","navPrev","navNext","mainImage","uploadBtn","manageBtn","fileInput","uploadModal","modalClose","cancelBtn","submitBtn","titleInput","dateInput","uploadArea","adminPanel","adminClose","adminGrid","adminSaveBtn","adminCancelBtn","confirmDialog","confirmCancel","confirmOk","confirmMsg","compressingOverlay","previewOverlay","previewClose","previewImg","previewRotL","previewRotR","previewSave","pwdOverlay","pwdInput","pwdErr","pwdCancel","pwdSubmit","catSidebar","catList","catToggle","catMask","catManageList","catNewName","catCreateBtn","catInput"];
 ids.forEach(function(id){el[id]=document.getElementById(id);});
 
 // ===== Init =====
 function init(){
   IS_CLOUD = (window.location.protocol === "https:" || window.location.protocol === "http:");
-  loadMemories(function(){ renderTimeline(); updateDisplay(); });
+  loadMemories(function(){ buildCats(); renderTimeline(); updateDisplay(); });
   bindEvents();
   startParticles();
   document.addEventListener("keydown", function(e){
@@ -381,10 +498,14 @@ function loadMemories(cb){
       if(xhr.status===200){
         try{
           var cloud=JSON.parse(xhr.responseText);
-          if(Array.isArray(cloud)&&cloud.length){
-            ms=cloud;
-            try{localStorage.setItem("memoir_list",xhr.responseText);}catch(e){}
-            if(cb) cb(); return;
+          if(Array.isArray(cloud)){
+            if(cloud.length) ms=cloud;
+            catOrder=[];catBold=[];catChildren={};
+            finishLoad(cb); return;
+          }else if(cloud&&Array.isArray(cloud.photos)){
+            if(cloud.photos.length) ms=cloud.photos;
+            catOrder=cloud.cats||[];catBold=cloud.catBold||[];catChildren=cloud.catChildren||{};
+            finishLoad(cb); return;
           }
         }catch(e){}
       }
@@ -396,15 +517,61 @@ function loadMemories(cb){
     loadLocalFallback(cb);
   }
 }
+function listBucketFiles(cb){
+  var xhr=new XMLHttpRequest();
+  xhr.open("POST",STORAGE_URL+"/object/list/"+BUCKET_NAME,true);
+  xhr.setRequestHeader("apikey",SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);
+  xhr.setRequestHeader("Content-Type","application/json");
+  xhr.onload=function(){
+    if(xhr.status===200){
+      try{
+        var arr=JSON.parse(xhr.responseText);
+        var names=[];
+        (Array.isArray(arr)?arr:[]).forEach(function(f){
+          if(f&&f.name&&/\.(jpe?g|png|webp|gif)$/i.test(f.name)) names.push(f.name);
+        });
+        cb(null,names); return;
+      }catch(e){}
+    }
+    cb("list failed");
+  };
+  xhr.onerror=function(){cb("list failed");};
+  xhr.send('{"prefix":"","limit":200,"offset":0}');
+}
+function mergeBucketOrphans(names){
+  var have={};
+  ms.forEach(function(m){have[m.url]=true;});
+  var added=0;
+  names.forEach(function(n){
+    var u=STORAGE_URL+"/object/public/"+BUCKET_NAME+"/"+n;
+    if(!have[u]){
+      var ts=parseInt(String(n).split("_")[0],10);
+      var d=ts?new Date(ts).toISOString().split("T")[0]:"";
+      ms.push({id:"m"+Date.now()+"_"+added, title:String(n).replace(/\.[^.]+$/,""), date:d, url:u, cat:"未分类"});
+      added++;
+    }
+  });
+}
+function finishLoad(cb){
+  listBucketFiles(function(err,names){
+    if(!err) mergeBucketOrphans(names);
+    try{localStorage.setItem("memoir_list",JSON.stringify({cats:catOrder,catBold:catBold,catChildren:catChildren,photos:ms}));}catch(e){}
+    if(cb) cb();
+  });
+}
 function loadLocalFallback(cb){
   ms = JSON.parse(JSON.stringify(SD));
   try{
     var saved=localStorage.getItem("memoir_list");
     if(saved){
       var extra=JSON.parse(saved);
+      var m={};ms.forEach(function(x){m[x.id]=true;});
       if(Array.isArray(extra)){
-        var m={};ms.forEach(function(x){m[x.id]=true;});
         extra.forEach(function(x){if(!m[x.id])ms.push(x);});
+      }else if(extra&&Array.isArray(extra.photos)){
+        catOrder=extra.cats||[];catBold=extra.catBold||[];catChildren=extra.catChildren||{};
+        extra.photos.forEach(function(x){if(!m[x.id])ms.push(x);});
       }
     }
   }catch(e){}
@@ -415,7 +582,8 @@ function saveManifest(cb){
   // 【安全加固】写入相册列表(manifest.json)必须使用登录后的 AUTH_TOKEN
   // 未登录直接拒绝，禁止降级为公开的 anon key（RLS 已禁止匿名写入）
   if(!AUTH_TOKEN){ alert("请先登录管理员账号再保存"); cb(false); return; }
-  var json = JSON.stringify(ms);
+  var payload={cats:catOrder,catBold:catBold,catChildren:catChildren,photos:ms};
+  var json = JSON.stringify(payload);
   if(!IS_CLOUD){
     try{localStorage.setItem("memoir_list",json);}catch(e){}
     cb(true); return;
@@ -489,10 +657,359 @@ function uploadToSupabase(file, cb){
   xhr.send(file);
 }
 
+// ===== 分类侧边栏 =====
+function getChildCats(p){ return catChildren[p]||[]; }
+function isChildCat(c){ for(var p in catChildren){ if(catChildren[p].indexOf(c)>=0) return true; } return false; }
+function parentOf(c){ for(var p in catChildren){ if(catChildren[p].indexOf(c)>=0) return p; } return null; }
+function catTotal(c){
+  var n=ms.filter(function(m){return (m.cat||"未分类")===c;}).length;
+  getChildCats(c).forEach(function(sc){ n+=ms.filter(function(m){return m.cat===sc;}).length; });
+  return n;
+}
+function parentSeq(){
+  var seq=[];
+  catList.forEach(function(c){ if(c!=="全部"&&c!=="未分类"&&!isChildCat(c)) seq.push(c); });
+  return seq;
+}
+function buildCats(){
+  var set={};set["全部"]=true;
+  ms.forEach(function(m){set[m.cat||"未分类"]=true;});
+  catOrder.forEach(function(c){set[c]=true;});
+  Object.keys(catChildren).forEach(function(p){ set[p]=true; getChildCats(p).forEach(function(sc){set[sc]=true;}); });
+  catList=["全部"];
+  function pushParent(p){
+    if(set[p]&&catList.indexOf(p)<0){
+      catList.push(p);
+      if(expandedCats[p]){ getChildCats(p).forEach(function(sc){ if(catList.indexOf(sc)<0) catList.push(sc); }); }
+    }
+  }
+  catOrder.forEach(pushParent);
+  Object.keys(catChildren).forEach(pushParent);
+  Object.keys(set).forEach(function(c){
+    if(c!=="全部"&&!isChildCat(c)&&catList.indexOf(c)<0) catList.push(c);
+  });
+  renderCatSidebar();
+}
+function renderCatSidebar(){
+  var html="";
+  catList.forEach(function(c){
+    if(c==="全部")return;
+    var isChild=isChildCat(c);
+    var n=isChild? ms.filter(function(m){return m.cat===c;}).length : catTotal(c);
+    var arrow="";
+    if(!isChild&&catChildren[c]){
+      arrow='<span class="cat-arrow'+(expandedCats[c]?" open":"")+'" data-toggle="'+he(c)+'">'+(expandedCats[c]?"&#9662;":"&#9656;")+'</span>';
+    }
+    var left='<span class="cat-left">'+arrow+'<span class="cat-name">'+he(c)+'</span></span>';
+    html+='<div class="cat-item'+(curCat===c?" active":"")+(catBold.indexOf(c)>=0?" bold":"")+(isChild?" cat-child":"")+'" data-cat="'+he(c)+'">'+left+'<span class="cat-count">'+n+'</span></div>';
+  });
+  el.catList.innerHTML=html;
+  Array.prototype.forEach.call(el.catList.querySelectorAll(".cat-item"),function(it){
+    it.addEventListener("click",function(e){
+      if(e.target.closest(".cat-arrow"))return;
+      switchCat(this.dataset.cat);closeCatDrawer();
+    });
+  });
+  Array.prototype.forEach.call(el.catList.querySelectorAll(".cat-arrow"),function(a){
+    a.addEventListener("click",function(e){
+      e.stopPropagation();
+      var p=this.dataset.toggle;
+      if(expandedCats[p])delete expandedCats[p];else expandedCats[p]=true;
+      buildCats();
+    });
+  });
+}
+function viewMs(){
+  if(curCat==="全部") return ms;
+  if(catChildren[curCat]){
+    return ms.filter(function(m){return (m.cat||"未分类")===curCat||getChildCats(curCat).indexOf(m.cat)>=0;});
+  }
+  return ms.filter(function(m){return (m.cat||"未分类")===curCat;});
+}
+function switchCat(c){
+  if(c===curCat) return;
+  curCat=c;
+  ci=0;
+  renderCatSidebar();
+  renderTimeline();
+  updateDisplay();
+}
+function openCatDrawer(){
+  el.catSidebar.classList.add("open");
+  el.catMask.classList.add("show");
+}
+function closeCatDrawer(){
+  el.catSidebar.classList.remove("open");
+  el.catMask.classList.remove("show");
+}
+function toggleCatDrawer(){
+  if(el.catSidebar.classList.contains("open")) closeCatDrawer();
+  else openCatDrawer();
+}
+function renderCatManage(){
+  var html="";
+  catList.forEach(function(c){
+    if(c==="全部")return;
+    var isChild=isChildCat(c);
+    var n=isChild? ms.filter(function(m){return m.cat===c;}).length : catTotal(c);
+    var foldBtn=(!isChild&&catChildren[c])?'<button class="cm-fold">'+(expandedCats[c]?"&#9662;":"&#9656;")+'</button>':'';
+    var subBtn=(!isChild&&c!=="未分类")?'<button class="cm-sub">+子</button>':'';
+    var sortBtns=(c==="未分类")?'<button class="cm-up" disabled style="opacity:.3">&#8593;</button><button class="cm-down" disabled style="opacity:.3">&#8595;</button>':'<button class="cm-up">&#8593;</button><button class="cm-down">&#8595;</button>';
+    var boldChk='<label class="cm-bold-label"><input type="checkbox" class="cm-bold"'+(catBold.indexOf(c)>=0?" checked":"")+'>加粗</label>';
+    html+='<div class="cat-manage-row'+(isChild?" cm-child":"")+'" data-cat="'+he(c)+'">'+
+      foldBtn+
+      '<input class="cm-name" value="'+he(c)+'">'+
+      boldChk+
+      '<span class="cm-count">'+n+' 张</span>'+
+      '<div class="cm-btns">'+
+      sortBtns+
+      subBtn+
+      '<button class="cm-rename">重命名</button>'+
+      (c==="未分类"?'<button class="cm-del" style="opacity:.4" disabled>删除</button>':'<button class="cm-del">删除</button>')+
+      '</div>'+
+      '</div>';
+  });
+  el.catManageList.innerHTML=html;
+  el.catManageList.querySelectorAll(".cm-bold").forEach(function(b){
+    b.addEventListener("change",function(){
+      var c=b.closest(".cat-manage-row").dataset.cat;
+      var bi=catBold.indexOf(c);
+      if(b.checked){ if(bi<0) catBold.push(c); }
+      else { if(bi>=0) catBold.splice(bi,1); }
+      buildCats();
+    });
+  });
+  el.catManageList.querySelectorAll(".cm-fold").forEach(function(b){
+    b.addEventListener("click",function(){
+      var p=b.closest(".cat-manage-row").dataset.cat;
+      if(expandedCats[p])delete expandedCats[p];else expandedCats[p]=true;
+      renderCatManage();buildCats();
+    });
+  });
+  el.catManageList.querySelectorAll(".cm-sub").forEach(function(b){
+    b.addEventListener("click",function(){
+      var p=b.closest(".cat-manage-row").dataset.cat;
+      var nm=prompt("在「"+p+"」下创建子分类，输入名称：","");
+      if(!nm||!nm.trim())return;
+      nm=nm.trim();
+      if(catList.indexOf(nm)>=0||isChildCat(nm)){alert("分类「"+nm+"」已存在");return;}
+      if(!catChildren[p])catChildren[p]=[];
+      catChildren[p].push(nm);
+      expandedCats[p]=true;
+      buildCats();renderCatManage();renderAdminGrid();
+      alert("已创建子分类「"+p+" → "+nm+"」，记得点「保存更改」");
+    });
+  });
+  el.catManageList.querySelectorAll(".cm-up").forEach(function(b){
+    b.addEventListener("click",function(){
+      var c=b.closest(".cat-manage-row").dataset.cat;
+      var seq, idx;
+      if(isChildCat(c)){
+        var p=parentOf(c); seq=catChildren[p]; idx=seq.indexOf(c);
+      }else{
+        seq=parentSeq(); idx=seq.indexOf(c);
+      }
+      if(idx<=0)return;
+      var t=seq[idx];seq[idx]=seq[idx-1];seq[idx-1]=t;
+      if(!isChildCat(c)) catOrder=seq.slice();
+      renderCatManage();buildCats();
+    });
+  });
+  el.catManageList.querySelectorAll(".cm-down").forEach(function(b){
+    b.addEventListener("click",function(){
+      var c=b.closest(".cat-manage-row").dataset.cat;
+      var seq, idx;
+      if(isChildCat(c)){
+        var p=parentOf(c); seq=catChildren[p]; idx=seq.indexOf(c);
+      }else{
+        seq=parentSeq(); idx=seq.indexOf(c);
+      }
+      if(idx<0||idx>=seq.length-1)return;
+      var t=seq[idx];seq[idx]=seq[idx+1];seq[idx+1]=t;
+      if(!isChildCat(c)) catOrder=seq.slice();
+      renderCatManage();buildCats();
+    });
+  });
+  el.catManageList.querySelectorAll(".cm-rename").forEach(function(b){
+    b.addEventListener("click",function(){
+      var row=b.closest(".cat-manage-row");
+      var oldC=row.dataset.cat, newC=row.querySelector(".cm-name").value.trim();
+      if(!newC){alert("分类名不能为空");return;}
+      if(oldC===newC) return;
+      if(catList.indexOf(newC)>=0&&newC!==oldC){alert("分类「"+newC+"」已存在");return;}
+      if(isChildCat(oldC)){
+        var p=parentOf(oldC), ci2=catChildren[p].indexOf(oldC);
+        catChildren[p][ci2]=newC;
+      }else if(catChildren[oldC]){
+        catChildren[newC]=catChildren[oldC];delete catChildren[oldC];
+      }
+      var ei=catOrder.indexOf(oldC);
+      if(ei>=0) catOrder[ei]=newC;
+      var bi=catBold.indexOf(oldC);
+      if(bi>=0) catBold[bi]=newC;
+      if(expandedCats[oldC]){expandedCats[newC]=true;delete expandedCats[oldC];}
+      ms.forEach(function(m){ if((m.cat||"未分类")===oldC){ m.cat=newC; } });
+      renderCatManage(); renderCatSidebar(); buildCats(); renderAdminGrid();
+      alert("已重命名为「"+newC+"」，记得点「保存更改」同步云端");
+    });
+  });
+  el.catManageList.querySelectorAll(".cm-del").forEach(function(b){
+    b.addEventListener("click",function(){
+      var row=b.closest(".cat-manage-row");
+      var c=row.dataset.cat;
+      var isChild=isChildCat(c);
+      var n=isChild? ms.filter(function(m){return m.cat===c;}).length : catTotal(c);
+      var msg;
+      if(isChild){ msg="删除子分类「"+c+"」？"+n+" 张照片将归入「"+parentOf(c)+"」"; }
+      else if(catChildren[c]){ msg="删除分类「"+c+"」及其 "+getChildCats(c).length+" 个子分类？"+n+" 张照片将归入「未分类」"; }
+      else { msg=n>0?("删除分类「"+c+"」？"+n+" 张照片将归入「未分类」"):("删除空分类「"+c+"」？"); }
+      if(!confirm(msg))return;
+      if(isChild){
+        var p=parentOf(c), ci2=catChildren[p].indexOf(c);
+        catChildren[p].splice(ci2,1);
+        ms.forEach(function(m){ if(m.cat===c){ m.cat=p; } });
+      }else{
+        getChildCats(c).forEach(function(sc){
+          var bi2=catBold.indexOf(sc); if(bi2>=0) catBold.splice(bi2,1);
+          ms.forEach(function(m){ if(m.cat===sc){ m.cat="未分类"; } });
+        });
+        delete catChildren[c];
+        ms.forEach(function(m){ if((m.cat||"未分类")===c){ m.cat="未分类"; } });
+      }
+      var ei=catOrder.indexOf(c);
+      if(ei>=0) catOrder.splice(ei,1);
+      var bi=catBold.indexOf(c);
+      if(bi>=0) catBold.splice(bi,1);
+      delete expandedCats[c];
+      renderCatManage(); renderCatSidebar(); buildCats(); renderAdminGrid();
+      alert("已删除分类，记得点「保存更改」同步云端");
+    });
+  });
+}
+var catSelects=[],catSelectBound=false;
+function closeCatSelects(){catSelects.forEach(function(w){w.root.classList.remove("open");});}
+function bindCatSelectGlobals(){
+  if(catSelectBound)return;catSelectBound=true;
+  document.addEventListener("click",function(e){
+    var inside=false;
+    catSelects.forEach(function(w){if(w.root.contains(e.target))inside=true;});
+    if(!inside)closeCatSelects();
+  });
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeCatSelects();});
+}
+function makeCatSelect(container,initial,onChange,getOptions){
+  bindCatSelectGlobals();
+  var val=initial||"未分类";
+  var root=document.createElement("div");
+  root.className="cat-select";
+  var btn=document.createElement("button");
+  btn.type="button";btn.className="cat-select-trigger";
+  var menu=document.createElement("div");
+  menu.className="cat-select-menu";
+  root.appendChild(btn);root.appendChild(menu);
+    function render(){
+    btn.textContent=val+" ▾";
+    menu.innerHTML="";
+    function addItem(label,cls,v){
+      var it=document.createElement("div");
+      it.className="cat-select-item"+(cls||"")+(v===val?" selected":"");
+      it.textContent=label;
+      it.addEventListener("click",function(){
+        val=v;render();
+        closeCatSelects();
+        if(onChange)onChange(val);
+      });
+      menu.appendChild(it);
+    }
+    var opts=getOptions?getOptions():null;
+    if(opts){
+      opts.forEach(function(o){addItem(o.label,o.cls,o.v);});
+    }else{
+      catList.forEach(function(c){
+        if(c==="全部")return;
+        addItem(c,isChildCat(c)?" cs-child":" cs-parent",c);
+      });
+    }
+  }
+  btn.addEventListener("click",function(){
+    render();
+    if(root.classList.contains("open")){closeCatSelects();return;}
+    closeCatSelects();
+    root.classList.add("open");
+  });
+  container.appendChild(root);
+  render();
+  var api={root:root,value:function(){return val;},setValue:function(v){val=v||"未分类";render();},refresh:function(){render();}};
+  catSelects.push(api);
+  return api;
+}
+function makeCatPair(container,initial,onChange){
+  var pDiv=document.createElement("div");
+  pDiv.className="cat-pair-parent";
+  var cDiv=document.createElement("div");
+  cDiv.className="cat-pair-child";
+  cDiv.style.display="none";
+  container.appendChild(pDiv);
+  container.appendChild(cDiv);
+  var childVal="";
+  var cSel=null;
+  var pSel=makeCatSelect(pDiv,"未分类",function(){
+    syncChild();
+    if(onChange)onChange(value());
+  },function(){
+    var opts=[{v:"未分类",label:"未分类",cls:""}];
+    catList.forEach(function(c){
+      if(c==="全部"||c==="未分类"||isChildCat(c))return;
+      opts.push({v:c,label:c,cls:"cs-parent"});
+    });
+    return opts;
+  });
+  function childOpts(){
+    var p=pSel.value();
+    var kids=getChildCats(p);
+    if(!kids.length)return null;
+    var opts=[{v:"",label:"（不选，归入「"+p+"」）",cls:""}];
+    kids.forEach(function(k){opts.push({v:k,label:k,cls:"cs-child"});});
+    return opts;
+  }
+  function syncChild(){
+    var kids=getChildCats(pSel.value());
+    var show=kids.length>0;
+    cDiv.style.display=show?"block":"none";
+    if(show){
+      if(!cSel){
+        cSel=makeCatSelect(cDiv,childVal,function(cv){childVal=cv;if(onChange)onChange(value());},childOpts);
+      }else{
+        childVal="";
+        cSel.setValue("");
+        cSel.refresh();
+      }
+    }else{
+      childVal="";
+    }
+  }
+  function value(){
+    if(cSel&&cSel.value())return cSel.value();
+    return pSel.value();
+  }
+  function setValue(v){
+    if(isChildCat(v)){
+      childVal=v;
+      pSel.setValue(parentOf(v)||"未分类");
+    }else{
+      childVal="";
+      pSel.setValue(v||"未分类");
+    }
+    syncChild();
+  }
+  setValue(initial||"未分类");
+  return {root:container,value:value,setValue:setValue,refresh:function(){pSel.refresh();if(cSel)cSel.refresh();}};
+}
 // ===== Display =====
 function updateDisplay(){
-  if(!ms.length) return;
-  var m=ms[ci], t=ms.length;
+  view=viewMs();
+  if(!view.length) return;
+  var m=view[ci], t=view.length;
   el.counter.innerHTML = (ci+1)+"/"+t;
   el.photoTitle.textContent = m.title;
   el.photoDate.textContent = formatDate(m.date);
@@ -513,8 +1030,8 @@ function updateDisplay(){
     el.photoFrame.style.padding="6px 14px 6px 14px";
   }
   var pi=(ci-1+t)%t, ni=(ci+1)%t;
-  el.prevImg.src = ms[pi].url;
-  el.nextImg.src = ms[ni].url;
+  el.prevImg.src = view[pi].url;
+  el.nextImg.src = view[ni].url;
   var y=m.date?new Date(m.date).getFullYear():0;
   var fl="sepia(0.15)saturate(0.85)contrast(1.05)";
   if(y&&y<2000) fl="sepia(0.55)saturate(0.6)brightness(0.85)contrast(1.1)";
@@ -528,7 +1045,7 @@ function updateDisplay(){
 
 function renderTimeline(){
   el.timelineDots.innerHTML="";
-  ms.forEach(function(m,i){
+  viewMs().forEach(function(m,i){
     var d=document.createElement("div");
     d.className="timeline-dot"+(i===ci?" active":"");
     d.dataset.idx=i;
@@ -541,13 +1058,14 @@ function renderTimeline(){
 }
 
 function goTo(i){
-  if(!ms.length) return;
-  i=((i%ms.length)+ms.length)%ms.length;
+  view=viewMs();
+  if(!view.length) return;
+  i=((i%view.length)+view.length)%view.length;
   if(i===ci) return;
   ci=i;
   var fr=el.photoFrame;
   fr.style.transition="none"; fr.style.transform="scale(1.08)"; fr.style.opacity="0.3"; fr.style.filter="blur(5px)";
-  el.currentImg.src=ms[ci].url; void fr.offsetHeight;
+  el.currentImg.src=view[ci].url; void fr.offsetHeight;
   fr.style.transition="transform 0.55s cubic-bezier(0.22,0.61,0.36,1),opacity 0.5s,filter 0.5s";
   fr.style.transform=""; fr.style.opacity=""; fr.style.filter="";
   updateDisplay(); renderTimeline(); randomEffect();
@@ -617,6 +1135,8 @@ function openUpload(){
   showPwdModal(function(){
     selectedFile=null; el.titleInput.value="";
     el.dateInput.value=new Date().toISOString().split("T")[0];
+    if(!el.catInput._sel) el.catInput._sel=makeCatPair(el.catInput,"未分类",function(){});
+    el.catInput._sel.setValue("未分类");el.catInput._sel.refresh();
     el.uploadArea.textContent="点击选择图片";
     el.uploadArea.style.borderColor="rgba(196,169,125,0.2)";
     el.uploadModal.classList.add("open");
@@ -649,7 +1169,7 @@ el.submitBtn.addEventListener("click",function(){
     uploadToSupabase(cf,function(err,url){
       el.compressingOverlay.classList.remove("show");
       if(err){alert(err); el.submitBtn.textContent="确定上传"; el.submitBtn.disabled=false; return;}
-      ms.push({id:"m"+Date.now(), title:title, date:date, url:url});
+      ms.push({id:"m"+Date.now(), title:title, date:date, url:url, cat:(el.catInput&&el.catInput._sel)?(el.catInput._sel.value()||"未分类"):"未分类"});
       saveManifest(function(){
         renderTimeline(); goTo(ms.length-1);
         closeUpload(); el.submitBtn.textContent="确定上传"; el.submitBtn.disabled=false;
@@ -660,7 +1180,7 @@ el.submitBtn.addEventListener("click",function(){
 });
 
 // ===== Admin =====
-function openAdmin(){showPwdModal(function(){renderAdminGrid();el.adminPanel.classList.add("open");});}
+function openAdmin(){showPwdModal(function(){renderAdminGrid();renderCatManage();el.adminPanel.classList.add("open");});}
 function closeAdmin(){el.adminPanel.classList.remove("open");}
 
 function renderAdminGrid(){
@@ -672,20 +1192,23 @@ function renderAdminGrid(){
       '<div class="admin-card-fields">'+
       '<input class="at" value="'+he(m.title)+'" placeholder="标题">'+
       '<div style="display:flex;gap:6px"><input class="ad" type="date" value="'+he(m.date||"")+'" style="flex:1">'+
-      '<input class="ai" type="number" value="'+(i+1)+'" min="1" max="'+ms.length+'" style="width:50px"></div></div>'+
+      '<input class="ai" type="number" value="'+(i+1)+'" min="1" max="'+ms.length+'" style="width:50px"></div>'+
+      '<div class="ac"></div></div>'+
       '<div class="admin-card-actions"><button class="up-btn" data-i="'+i+'">&#8593;</button>'+
       '<button class="down-btn" data-i="'+i+'">&#8595;</button>'+
-      '<button class="rot-l-btn" data-i="'+i+'">&amp;#8630;</button>'+
-      '<button class="rot-r-btn" data-i="'+i+'">&amp;#8631;</button>'+
+      '<button class="rot-l-btn" data-i="'+i+'">&#8630;</button>'+
+      '<button class="rot-r-btn" data-i="'+i+'">&#8631;</button>'+
       '<button class="del-btn" data-i="'+i+'">&#10005;</button></div>';
     el.adminGrid.appendChild(c);
+    var acDiv=c.querySelector(".ac");
+    if(acDiv){acDiv._sel=makeCatPair(acDiv,m.cat||"未分类",function(v){m.cat=v;renderCatManage();});}
   });
   el.adminGrid.querySelectorAll(".up-btn").forEach(function(b){
     b.addEventListener("click",function(){
       var idx=parseInt(this.dataset.i);
       if(idx<=0)return;
       var t=ms[idx];ms[idx]=ms[idx-1];ms[idx-1]=t;
-      renderAdminGrid();
+      renderAdminGrid(); renderTimeline(); updateDisplay();
     });
   });
   el.adminGrid.querySelectorAll(".down-btn").forEach(function(b){
@@ -693,7 +1216,7 @@ function renderAdminGrid(){
       var idx=parseInt(this.dataset.i);
       if(idx>=ms.length-1)return;
       var t=ms[idx];ms[idx]=ms[idx+1];ms[idx+1]=t;
-      renderAdminGrid();
+      renderAdminGrid(); renderTimeline(); updateDisplay();
     });
   });
   el.adminGrid.querySelectorAll(".rot-l-btn").forEach(function(b){b.addEventListener("click",function(){var idx=parseInt(this.dataset.i);ms[idx].rotate=(ms[idx].rotate||0)-90;renderAdminGrid();});});
@@ -750,10 +1273,11 @@ el.adminSaveBtn.addEventListener("click",function(){
   cards.forEach(function(c){
     var idx=parseInt(c.dataset.idx);
     var og=ms[idx];
-    nm.push({id:og.id||("m"+Date.now()), title:c.querySelector(".at").value.trim()||og.title, date:c.querySelector(".ad").value||og.date, rotate:og.rotate||0, url:og.url});
+    nm.push({id:og.id||("m"+Date.now()), title:c.querySelector(".at").value.trim()||og.title, date:c.querySelector(".ad").value||og.date, rotate:og.rotate||0, url:og.url, cat:(c.querySelector(".ac")&&c.querySelector(".ac")._sel)?(c.querySelector(".ac")._sel.value()||"未分类"):(og.cat||"未分类")});
   });
   if(nm.length){ms=nm;}
   saveManifest(function(){
+    buildCats();
     renderTimeline();
     if(ci>=ms.length)ci=Math.max(0,ms.length-1);
     updateDisplay();
@@ -853,7 +1377,7 @@ function startParticles(){
 
 // ===== Events =====
 function bindEvents(){
-  document.addEventListener("wheel",function(e){e.preventDefault();if(e.deltaY>0)nextImg();else prevImg();},{passive:false});
+  document.addEventListener("wheel",function(e){if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open"))return;e.preventDefault();if(e.deltaY>0)nextImg();else prevImg();},{passive:false});
   document.addEventListener("keydown",function(e){
     if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open"))return;
     if(e.key==="ArrowLeft"||e.key==="ArrowUp")prevImg();else if(e.key==="ArrowRight"||e.key==="ArrowDown")nextImg();});
@@ -862,7 +1386,7 @@ function bindEvents(){
   // Touch swipe for mobile
   var tx=0,ty=0;
   document.addEventListener("touchstart",function(e){
-    if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open")||el.editorOverlay.classList.contains("open")||el.compressOverlay.classList.contains("open")){tx=0;return}
+    if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open")||el.compressingOverlay.classList.contains("show")||el.previewOverlay.classList.contains("open")){tx=0;return}
     tx=e.changedTouches[0].screenX;ty=e.changedTouches[0].screenY;
   },{passive:true});
   document.addEventListener("touchend",function(e){
@@ -871,6 +1395,19 @@ function bindEvents(){
     if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){if(dx>0)nextImg();else prevImg()}
     tx=0;
   },{passive:true});
+
+  // ===== 分类侧边栏开关 =====
+  el.catToggle.addEventListener("click",toggleCatDrawer);
+  el.catMask.addEventListener("click",closeCatDrawer);
+  el.catCreateBtn.addEventListener("click",function(){
+    var n=el.catNewName.value.trim();
+    if(!n){alert("请输入分类名称");return;}
+    if(catList.indexOf(n)>=0){alert("分类「"+n+"」已存在");return;}
+    catOrder.push(n);
+    el.catNewName.value="";
+    buildCats(); renderCatManage(); renderAdminGrid();
+    alert("已创建分类「"+n+"」，可在下方照片管理中选择，记得点「保存更改」");
+  });
 }
 
 var as=document.createElement("style");
