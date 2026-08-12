@@ -312,7 +312,74 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 .cat-manage-row.cm-child{padding-left:8px}
 .admin-card-thumb{width:36px;height:36px}
 .cm-count{font-size:11px}
-}</style>
+}/* ===== 音乐播放条（前台） ===== */
+.music-bar{display:none;align-items:center;gap:8px;margin:10px auto 0;padding:6px 12px;background:rgba(26,20,16,0.55);border:1px solid rgba(196,169,125,0.15);border-radius:20px;max-width:380px;width:100%;box-sizing:border-box}
+.music-play{width:26px;height:26px;flex:none;border-radius:50%;background:rgba(196,169,125,0.12);border:1px solid rgba(196,169,125,0.3);color:#c4a97d;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;font-family:inherit;line-height:1}
+.music-play:hover{background:rgba(196,169,125,0.22)}
+.music-name{font-size:12px;color:#a08970;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
+.music-progress{flex:1;height:3px;background:rgba(196,169,125,0.15);border-radius:2px;cursor:pointer;position:relative}
+.music-progress-fill{height:100%;width:0;background:#c4a97d;border-radius:2px}
+.music-time{font-size:10px;color:#6a5535;white-space:nowrap;flex:none}
+.comment-btn{margin-top:12px;padding:6px 18px;background:rgba(196,169,125,0.08);border:1px dashed rgba(196,169,125,0.3);border-radius:16px;color:#c4a97d;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .3s;font-family:inherit}
+.comment-btn:hover{background:rgba(196,169,125,0.18);border-style:solid}
+.comment-count{margin-left:6px;padding:0 7px;background:rgba(196,169,125,0.15);border-radius:8px;font-size:11px;color:#e8d5b0}
+/* ===== 留言全屏层 ===== */
+.comment-overlay{position:fixed;inset:0;z-index:150;background:rgba(15,11,8,0.92);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .4s ease,visibility .4s}
+.comment-overlay.open{opacity:1;visibility:visible}
+.comment-panel{width:min(680px,92vw);max-height:88vh;background:linear-gradient(160deg,#2a2018,#1a1410);border:1px solid rgba(196,169,125,0.18);border-radius:8px;box-shadow:0 24px 70px rgba(0,0,0,.65);transform:scale(.94) translateY(18px);transition:transform .45s cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column;overflow:hidden}
+.comment-overlay.open .comment-panel{transform:scale(1) translateY(0)}
+.comment-header{display:flex;align-items:center;gap:12px;padding:16px 20px 12px;border-bottom:1px solid rgba(196,169,125,0.1)}
+.comment-header h2{font-size:18px;font-weight:400;color:#e8d5b0;letter-spacing:3px}
+.comment-sub{flex:1;font-size:12px;color:#8b7355;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.comment-close{background:none;border:none;color:#8b7355;font-size:26px;cursor:pointer;line-height:1;padding:2px 4px}
+.comment-close:hover{color:#c4a97d}
+.comment-list{flex:1;overflow-y:auto;padding:14px 20px;min-height:120px}
+.cmt-anim{animation:cmtIn .35s ease}
+@keyframes cmtIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.cmt-item{padding:10px 12px;border-left:2px solid rgba(196,169,125,0.25);background:rgba(26,20,16,0.4);border-radius:0 4px 4px 0;margin-bottom:10px}
+.cmt-nick{color:#e8d5b0;font-size:14px;font-style:italic}
+.cmt-time{color:#6a5535;font-size:11px;margin-left:8px}
+.cmt-body{color:#d4c5a9;font-size:14px;line-height:1.7;margin-top:5px;word-break:break-word}
+.cmt-tip{color:#8b7355;font-size:13px;text-align:center;padding:24px 0}
+.cmt-tip button{margin-left:8px}
+.cmt-empty{color:#6a5535;font-size:14px;text-align:center;padding:30px 0;font-style:italic}
+.comment-pager{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 20px;border-top:1px solid rgba(196,169,125,0.08)}
+.comment-pager .btn{padding:6px 16px;font-size:13px}
+.comment-pager .btn:disabled{opacity:.35;cursor:default}
+.cmt-pageinfo{color:#8b7355;font-size:12px;letter-spacing:1px}
+.comment-form{padding:14px 20px 18px;border-top:1px solid rgba(196,169,125,0.1);background:rgba(24,18,13,0.5)}
+.cmt-form-row{display:flex;gap:8px;margin-bottom:8px}
+.comment-form input[type="text"],.comment-form textarea{width:100%;padding:9px 12px;background:rgba(26,20,16,0.6);border:1px solid rgba(196,169,125,0.15);border-radius:4px;color:#d4c5a9;font-size:14px;outline:none;font-family:inherit;resize:none;box-sizing:border-box}
+.comment-form input:focus,.comment-form textarea:focus{border-color:rgba(196,169,125,0.4)}
+.cmt-honeypot{position:absolute;left:-9999px;opacity:0;height:0;width:0;pointer-events:none;border:none;padding:0;margin:0}
+.comment-form textarea{min-height:64px}
+.cmt-form-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.cmt-err{color:#b06050;font-size:12px;flex:1;min-height:16px}
+/* ===== 管理卡片音乐区 ===== */
+.admin-music{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(196,169,125,0.1)}
+.admin-music .am-label{font-size:11px;color:#6a5535;letter-spacing:1px;margin-right:2px}
+.admin-music button{background:rgba(196,169,125,0.1);border:1px solid rgba(196,169,125,0.2);color:#c4a97d;padding:3px 8px;border-radius:3px;cursor:pointer;font-size:11px;font-family:inherit}
+.admin-music button:hover{background:rgba(196,169,125,0.2)}
+.admin-music .am-name{font-size:11px;color:#8b7355;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-basis:100%;min-height:14px}
+/* ===== 管理端留言列表 ===== */
+.cm-row{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px dashed rgba(196,169,125,0.08);font-size:13px}
+.cm-row:last-child{border-bottom:none}
+.cm-info{flex:1;min-width:0}
+.cm-nick{color:#e8d5b0}
+.cm-time{color:#6a5535;font-size:11px;margin-left:6px}
+.cm-phone{color:#a08970;font-size:12px;margin-top:2px}
+.cm-content{color:#d4c5a9;font-size:13px;margin-top:3px;line-height:1.6;word-break:break-word}
+.cm-del{background:rgba(180,80,60,0.15);border:1px solid rgba(180,80,60,0.3);color:#d48a6a;padding:4px 10px;border-radius:3px;cursor:pointer;font-size:12px;flex:none;font-family:inherit}
+.cm-del:hover{background:rgba(180,80,60,0.25)}
+.cm-empty{color:#6a5535;font-size:13px;padding:10px 0}
+@media(max-width:768px){
+.music-bar{max-width:100%}
+.comment-panel{width:94vw;max-height:92vh}
+.comment-list{padding:12px 14px}
+.comment-form{padding:12px 14px 14px}
+.cmt-form-row{flex-direction:column;gap:6px}
+}
+</style>
 </head>
 <body>
 <div id="catSidebar">
@@ -344,6 +411,13 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <div class="photo-counter" id="counter">1 / 3</div>
 <div class="photo-title" id="photoTitle">0503</div>
 <div class="photo-date" id="photoDate">2025.05</div>
+<div class="music-bar" id="musicBar">
+<button class="music-play" id="musicPlay" title="播放 / 暂停">&#9654;</button>
+<span class="music-name" id="musicName">配乐</span>
+<div class="music-progress" id="musicProgress"><div class="music-progress-fill" id="musicProgressFill"></div></div>
+<span class="music-time" id="musicTime">0:00</span>
+</div>
+<button class="comment-btn" id="commentBtn">留言<span class="comment-count" id="commentCount">0</span></button>
 <div class="year-label" id="yearLabel">2 0 2 5</div>
 </div>
 </div>
@@ -375,6 +449,10 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <div class="cat-manage-header">分类管理</div>
 <div class="cat-create"><input id="catNewName" placeholder="输入新分类名称"><button id="catCreateBtn">创建</button></div>
 <div id="catManageList"></div>
+</div>
+<div class="cat-manage" id="commentManageSection">
+<div class="cat-manage-header">留言管理</div>
+<div id="commentManageList"></div>
 </div>
 <div class="admin-grid" id="adminGrid"></div>
 <div class="admin-footer">
@@ -424,6 +502,29 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 </div>
 
 
+<div class="comment-overlay" id="commentOverlay">
+<div class="comment-panel">
+<div class="comment-header">
+<h2>留 言</h2>
+<span class="comment-sub" id="commentSubTitle"></span>
+<button class="comment-close" id="commentClose">&times;</button>
+</div>
+<div class="comment-list" id="commentList"></div>
+<div class="comment-pager" id="commentPager"></div>
+<div class="comment-form">
+<div class="cmt-form-row">
+<input type="text" id="cmtNickname" maxlength="30" placeholder="你的昵称（30 字以内）" autocomplete="off">
+<input type="text" id="cmtHoneypot" class="cmt-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+</div>
+<textarea id="cmtContent" maxlength="500" rows="3" placeholder="写下你的留言（500 字以内）"></textarea>
+<div class="cmt-form-foot">
+<span class="cmt-err" id="cmtErr"></span>
+<button class="btn btn-submit" id="cmtSubmit">发表留言</button>
+</div>
+</div>
+</div>
+</div>
+
 <div class="preview-overlay" id="previewOverlay">
 <button class="preview-close" id="previewClose">&times;</button>
 <img id="previewImg" src="" alt="">
@@ -461,6 +562,7 @@ var BUCKET_NAME = 'photos';
 var STORAGE_URL = SUPABASE_URL + "/storage/v1";
 var MANIFEST_FILE = "manifest.json";
 var MANIFEST_URL = STORAGE_URL + "/object/public/" + BUCKET_NAME + "/" + MANIFEST_FILE;
+var DB_URL = SUPABASE_URL + "/rest/v1";
 
 var SD = [
 {"id":"s1","title":"0503","date":"2025-05-03","url":"250503.jpg","cat":"旅行"},
@@ -473,7 +575,7 @@ var curCat = "全部", catList = ["全部"], view = [], catOrder = [], catBold =
 var el = {}, selectedFiles = [];
 var IS_CLOUD = true;
 
-var ids = ["currentImg","prevImg","nextImg","photoTitle","photoDate","yearLabel","lightLeak","bgLayer","counter","photoFrame","timelineDots","shutterFlash","particleCanvas","navPrev","navNext","mainImage","uploadBtn","manageBtn","fileInput","uploadModal","modalClose","cancelBtn","submitBtn","titleInput","dateInput","uploadArea","adminPanel","adminClose","adminGrid","adminSaveBtn","adminCancelBtn","confirmDialog","confirmCancel","confirmOk","confirmMsg","compressingOverlay","previewOverlay","previewClose","previewImg","previewRotL","previewRotR","previewSave","pwdOverlay","pwdInput","pwdErr","pwdCancel","pwdSubmit","catSidebar","catList","catToggle","catMask","catManageList","catNewName","catCreateBtn","catInput","compressingText"];
+var ids = ["currentImg","prevImg","nextImg","photoTitle","photoDate","yearLabel","lightLeak","bgLayer","counter","photoFrame","timelineDots","shutterFlash","particleCanvas","navPrev","navNext","mainImage","uploadBtn","manageBtn","fileInput","uploadModal","modalClose","cancelBtn","submitBtn","titleInput","dateInput","uploadArea","adminPanel","adminClose","adminGrid","adminSaveBtn","adminCancelBtn","confirmDialog","confirmCancel","confirmOk","confirmMsg","compressingOverlay","previewOverlay","previewClose","previewImg","previewRotL","previewRotR","previewSave","pwdOverlay","pwdInput","pwdErr","pwdCancel","pwdSubmit","catSidebar","catList","catToggle","catMask","catManageList","catNewName","catCreateBtn","catInput","compressingText","musicBar","musicPlay","musicName","musicTime","musicProgress","musicProgressFill","commentBtn","commentCount","commentOverlay","commentClose","commentSubTitle","commentList","commentPager","cmtNickname","cmtHoneypot","cmtContent","cmtSubmit","cmtErr","commentManageList"];
 ids.forEach(function(id){el[id]=document.getElementById(id);});
 
 // ===== Init =====
@@ -483,7 +585,7 @@ function init(){
   bindEvents();
   startParticles();
   document.addEventListener("keydown", function(e){
-    if(e.key==="Escape"){closeUpload();closeAdmin();closeConfirm();}
+    if(e.key==="Escape"){closeUpload();closeAdmin();closeConfirm();closeComments();}
   });
 }
 
@@ -537,7 +639,7 @@ function listBucketFiles(cb){
     cb("list failed");
   };
   xhr.onerror=function(){cb("list failed");};
-  xhr.send('{"prefix":"","limit":200,"offset":0}');
+  xhr.send('{"prefix":"","limit":1000,"offset":0}');
 }
 function mergeBucketOrphans(names){
   var have={};
@@ -656,6 +758,28 @@ function uploadToSupabase(file, cb){
   xhr.onerror = function(){ cb("Network error"); };
   xhr.send(file);
 }
+
+// ===== 音乐上传（与照片同一桶，audio_ 前缀，孤儿合并按图片扩展名过滤不受影响） =====
+function uploadAudioToSupabase(file, cb){
+  // 【安全加固】上传音频必须携带登录后的 AUTH_TOKEN，未登录直接拒绝
+  if(!AUTH_TOKEN){ alert("请先登录管理员账号再上传音乐"); cb("Not logged in"); return; }
+  var ext="mp3";
+  var m=String(file.name||"").match(/\.([a-zA-Z0-9]+)$/);
+  if(m&&/^(mp3|m4a|ogg|wav)$/i.test(m[1])) ext=m[1].toLowerCase();
+  var fn="audio_"+Date.now()+"_"+Math.random().toString(36).slice(2,8)+"."+ext;
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", STORAGE_URL+"/object/"+BUCKET_NAME+"/"+fn, true);
+  xhr.setRequestHeader("Authorization","Bearer "+AUTH_TOKEN);
+  xhr.setRequestHeader("Content-Type", file.type||"audio/mpeg");
+  xhr.setRequestHeader("x-upsert","true");
+  xhr.onload = function(){
+    if(xhr.status>=200&&xhr.status<300) cb(null, STORAGE_URL+"/object/public/"+BUCKET_NAME+"/"+fn);
+    else cb("Upload failed: "+xhr.status+" "+xhr.responseText);
+  };
+  xhr.onerror = function(){ cb("Network error"); };
+  xhr.send(file);
+}
+var adminAudio = null;
 
 // ===== 分类侧边栏 =====
 function getChildCats(p){ return catChildren[p]||[]; }
@@ -1041,6 +1165,8 @@ function updateDisplay(){
   var sh=(ci/Math.max(t-1,1))*30-15;
   el.bgLayer.style.transform="translate("+sh+"px,"+(sh*0.3)+"px) scale(1.1)";
   el.timelineDots.querySelectorAll(".timeline-dot").forEach(function(d,i){d.classList.toggle("active",i===ci);});
+  updateMusicBar();
+  if(m&&m.id) fetchCommentCount(m.id);
 }
 
 function renderTimeline(){
@@ -1204,7 +1330,7 @@ el.submitBtn.addEventListener("click",function(){
 });
 
 // ===== Admin =====
-function openAdmin(){showPwdModal(function(){renderAdminGrid();renderCatManage();el.adminPanel.classList.add("open");});}
+function openAdmin(){showPwdModal(function(){renderAdminGrid();renderCatManage();renderCommentAdmin();el.adminPanel.classList.add("open");});}
 function closeAdmin(){el.adminPanel.classList.remove("open");}
 
 function renderAdminGrid(){
@@ -1217,7 +1343,17 @@ function renderAdminGrid(){
       '<input class="at" value="'+he(m.title)+'" placeholder="标题">'+
       '<div style="display:flex;gap:6px"><input class="ad" type="date" value="'+he(m.date||"")+'" style="flex:1">'+
       '<input class="ai" type="number" value="'+(i+1)+'" min="1" max="'+ms.length+'" style="width:50px"></div>'+
-      '<div class="ac"></div></div>'+
+      '<div class="ac"></div>'+
+      '<div class="admin-music">'+
+      '<span class="am-label">音乐</span>'+
+      '<button class="am-up">上传</button>'+
+      '<button class="am-link">填外链</button>'+
+      '<button class="am-play">试听</button>'+
+      '<button class="am-clear">清除</button>'+
+      '<span class="am-name">'+(m.musicName?he(m.musicName):(m.music?"已配乐":"未配乐"))+'</span>'+
+      '<input type="file" class="am-file" accept="audio/*,.mp3,.m4a,.ogg,.wav" style="display:none">'+
+      '</div></div>'+
+
       '<div class="admin-card-actions"><button class="up-btn" data-i="'+i+'">&#8593;</button>'+
       '<button class="down-btn" data-i="'+i+'">&#8595;</button>'+
       '<button class="rot-l-btn" data-i="'+i+'">&#8630;</button>'+
@@ -1226,6 +1362,72 @@ function renderAdminGrid(){
     el.adminGrid.appendChild(c);
     var acDiv=c.querySelector(".ac");
     if(acDiv){acDiv._sel=makeCatPair(acDiv,m.cat||"未分类",function(v){m.cat=v;renderCatManage();});}
+  });
+  // ===== 音乐管理（每张照片卡片：上传/外链/试听/清除） =====
+  el.adminGrid.querySelectorAll(".am-up").forEach(function(b){
+    b.addEventListener("click",function(){ b.closest(".admin-music").querySelector(".am-file").click(); });
+  });
+  el.adminGrid.querySelectorAll(".am-file").forEach(function(inp){
+    inp.addEventListener("change",function(){
+      var idx=parseInt(inp.closest(".admin-card").dataset.idx);
+      var f=inp.files&&inp.files[0];
+      inp.value="";
+      if(!f) return;
+      if(!/\.(mp3|m4a|ogg|wav)$/i.test(f.name)){alert("仅支持 mp3/m4a/ogg/wav 格式");return;}
+      if(f.size>20*1024*1024){alert("音频文件不能超过 20MB");return;}
+      var nameEl=inp.closest(".admin-music").querySelector(".am-name");
+      nameEl.textContent="上传中…";
+      uploadAudioToSupabase(f,function(err,url){
+        if(err){nameEl.textContent="";alert("上传失败："+err);return;}
+        ms[idx].music=url;
+        ms[idx].musicName=f.name.replace(/\.[^.]+$/,"");
+        nameEl.textContent=ms[idx].musicName;
+        updateDisplay();
+      });
+    });
+  });
+  el.adminGrid.querySelectorAll(".am-link").forEach(function(b){
+    b.addEventListener("click",function(){
+      var card=b.closest(".admin-card");
+      var idx=parseInt(card.dataset.idx);
+      var m=ms[idx];
+      var url=window.prompt("粘贴音乐直链（仅支持 http/https 开头）：",m.music||"");
+      if(url===null) return;
+      url=url.trim();
+      if(!/^https?:\/\//i.test(url)){alert("链接必须以 http:// 或 https:// 开头");return;}
+      m.music=url;
+      if(!m.musicName){
+        var nm=decodeURIComponent(url.split("/").pop().split("?")[0]).replace(/\.[^.]+$/,"");
+        m.musicName=nm||"外链配乐";
+      }
+      card.querySelector(".am-name").textContent=m.musicName;
+    });
+  });
+  el.adminGrid.querySelectorAll(".am-play").forEach(function(b){
+    b.addEventListener("click",function(){
+      var idx=parseInt(b.closest(".admin-card").dataset.idx);
+      var m=ms[idx];
+      if(!m||!m.music){alert("这张照片还没有音乐");return;}
+      if(!adminAudio){adminAudio=new Audio();adminAudio.preload="metadata";}
+      var cur=adminAudio.src;
+      if(cur&&cur.indexOf(m.music)>=0&&!adminAudio.paused){adminAudio.pause();b.textContent="试听";return;}
+      adminAudio.src=m.music;
+      adminAudio.play().then(function(){b.textContent="停止";}).catch(function(){b.textContent="试听";alert("试听失败，请检查音频地址是否有效");});
+      adminAudio.onended=function(){b.textContent="试听";};
+    });
+  });
+  el.adminGrid.querySelectorAll(".am-clear").forEach(function(b){
+    b.addEventListener("click",function(){
+      var idx=parseInt(b.closest(".admin-card").dataset.idx);
+      var m=ms[idx];
+      if(!m||!m.music){alert("这张照片还没有音乐");return;}
+      if(!window.confirm("确定清除这张照片的音乐吗？"))return;
+      var url=m.music;
+      delete m.music; delete m.musicName;
+      b.closest(".admin-card").querySelector(".am-name").textContent="未配乐";
+      if(url&&url.indexOf("/object/public/"+BUCKET_NAME+"/")>=0) removeAudioFromSupabase({music:url});
+      if(adminAudio){adminAudio.pause();adminAudio.src="";}
+    });
   });
   el.adminGrid.querySelectorAll(".up-btn").forEach(function(b){
     b.addEventListener("click",function(){
@@ -1297,7 +1499,7 @@ el.adminSaveBtn.addEventListener("click",function(){
   cards.forEach(function(c){
     var idx=parseInt(c.dataset.idx);
     var og=ms[idx];
-    nm.push({id:og.id||("m"+Date.now()), title:c.querySelector(".at").value.trim()||og.title, date:c.querySelector(".ad").value||og.date, rotate:og.rotate||0, url:og.url, cat:(c.querySelector(".ac")&&c.querySelector(".ac")._sel)?(c.querySelector(".ac")._sel.value()||"未分类"):(og.cat||"未分类")});
+    nm.push(Object.assign({}, og, {title:c.querySelector(".at").value.trim()||og.title, date:c.querySelector(".ad").value||og.date, rotate:og.rotate||0, cat:(c.querySelector(".ac")&&c.querySelector(".ac")._sel)?(c.querySelector(".ac")._sel.value()||"未分类"):(og.cat||"未分类")}));
   });
   if(nm.length){ms=nm;}
   saveManifest(function(){
@@ -1336,6 +1538,29 @@ function removeFromSupabase(m){
   xhr.send(JSON.stringify([fn]));
 }
 
+function removeAudioFromSupabase(m){
+  // 【安全加固】删除云端音乐必须携带登录后的 AUTH_TOKEN，未登录直接拒绝
+  if(!AUTH_TOKEN) return;
+  if(!m||!m.music) return;
+  var p="/object/public/"+BUCKET_NAME+"/", i=m.music.indexOf(p);
+  if(i<0) return;
+  var fn=m.music.substring(i+p.length).split("?")[0];
+  if(!fn) return;
+  var xhr=new XMLHttpRequest();
+  xhr.open("DELETE",STORAGE_URL+"/object/"+BUCKET_NAME+"/"+fn,true);
+  xhr.setRequestHeader("Authorization","Bearer "+AUTH_TOKEN);
+  xhr.setRequestHeader("Content-Type","application/json");
+  xhr.onload=function(){
+    if(!(xhr.status>=200&&xhr.status<300)){
+      try{alert("音乐文件删除失败("+xhr.status+")，请到 Supabase 控制台手动清理: "+fn);}catch(e){}
+    }
+  };
+  xhr.onerror=function(){
+    try{alert("网络异常，音乐文件未能自动删除，请到 Supabase 控制台手动清理: "+fn);}catch(e){}
+  };
+  xhr.send(JSON.stringify([fn]));
+}
+
 el.confirmOk.addEventListener("click",function(){
   if(deleteTarget===null)return;
   var removed=ms[deleteTarget];
@@ -1346,12 +1571,272 @@ el.confirmOk.addEventListener("click",function(){
     updateDisplay();
   });
   removeFromSupabase(removed);
+  removeAudioFromSupabase(removed);
   closeConfirm();deleteTarget=null;
 });
 el.confirmCancel.addEventListener("click",closeConfirm);
 el.confirmDialog.addEventListener("click",function(e){if(e.target===e.currentTarget)closeConfirm();});
 function closeConfirm(){el.confirmDialog.classList.remove("open");deleteTarget=null;}
 function he(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+// ===== 音乐播放（前台播放条，切换照片自动停止，不自动播放） =====
+var audioEl = null;
+function musicEl(){
+  if(!audioEl){
+    audioEl=document.createElement("audio");
+    audioEl.preload="metadata";
+    audioEl.addEventListener("play",function(){if(el.musicPlay)el.musicPlay.innerHTML="&#10073;&#10073;";});
+    audioEl.addEventListener("pause",function(){if(el.musicPlay)el.musicPlay.innerHTML="&#9654;";});
+    audioEl.addEventListener("timeupdate",function(){
+      if(audioEl.duration&&isFinite(audioEl.duration)){
+        el.musicProgressFill.style.width=(audioEl.currentTime/audioEl.duration*100)+"%";
+        el.musicTime.textContent=fmtTime(audioEl.currentTime)+" / "+fmtTime(audioEl.duration);
+      }
+    });
+    audioEl.addEventListener("loadedmetadata",function(){
+      el.musicTime.textContent="0:00 / "+fmtTime(audioEl.duration);
+    });
+    audioEl.addEventListener("ended",function(){audioEl.currentTime=0;audioEl.pause();});
+    audioEl.addEventListener("error",function(){
+      if(el.musicTime)el.musicTime.textContent="加载失败";
+      if(el.musicPlay)el.musicPlay.innerHTML="&#9654;";
+    });
+  }
+  return audioEl;
+}
+function fmtTime(t){
+  t=Math.floor(t||0);
+  if(!isFinite(t)||t<0)t=0;
+  return Math.floor(t/60)+":"+String(t%60).padStart(2,"0");
+}
+function updateMusicBar(){
+  var m=view[ci];
+  if(!m||!m.music){
+    if(audioEl){audioEl.pause();audioEl.removeAttribute("src");}
+    if(el.musicBar)el.musicBar.style.display="none";
+    return;
+  }
+  el.musicBar.style.display="flex";
+  el.musicName.textContent=m.musicName||"配乐";
+  var au=musicEl();
+  if(au.src!==m.music){
+    au.pause();
+    au.src=m.music;
+    el.musicProgressFill.style.width="0%";
+    el.musicTime.textContent="0:00";
+  }
+}
+el.musicPlay.addEventListener("click",function(){
+  var m=view[ci]; if(!m||!m.music) return;
+  var au=musicEl();
+  if(au.paused){ au.play().catch(function(){el.musicTime.textContent="播放失败";}); }
+  else au.pause();
+});
+el.musicProgress.addEventListener("click",function(e){
+  var au=musicEl();
+  if(!au.duration||!isFinite(au.duration)) return;
+  var r=el.musicProgress.getBoundingClientRect();
+  au.currentTime=(e.clientX-r.left)/r.width*au.duration;
+});
+
+// ===== 留言评论（Supabase comments 表 + RLS；公开可读可写、管理端删除） =====
+var cmtCache={}, cmtPage=1, cmtPhotoId="", cmtTotal=0, cmtPerPage=10, cmtLoading=false;
+function fmtDateTime(s){
+  if(!s) return "";
+  var d=new Date(s);
+  if(isNaN(d.getTime())) return "";
+  var p=function(n){return String(n).padStart(2,"0");};
+  return d.getFullYear()+"."+p(d.getMonth()+1)+"."+p(d.getDate())+" "+p(d.getHours())+":"+p(d.getMinutes());
+}
+function fetchCommentCount(pid){
+  if(!IS_CLOUD||!pid) return;
+  var xhr=new XMLHttpRequest();
+  xhr.open("GET",DB_URL+"/comments?select=id&photo_id=eq."+encodeURIComponent(pid),true);
+  xhr.setRequestHeader("apikey",SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);
+  xhr.setRequestHeader("Prefer","count=exact");
+  xhr.onload=function(){
+    if(xhr.status!==200) return;
+    var cr=xhr.getResponseHeader("Content-Range")||"";
+    var m=cr.match(/\/(\d+)$/);
+    if(m&&el.commentCount) el.commentCount.textContent=m[1];
+  };
+  xhr.send();
+}
+function bindCmtRetry(){
+  var b=document.getElementById("cmtRetry");
+  if(b) b.addEventListener("click",function(){loadComments(cmtPhotoId,cmtPage,true);});
+}
+function loadComments(pid,page,showLoading){
+  cmtPhotoId=pid; cmtPage=page;
+  if(cmtCache[pid]&&cmtCache[pid].pages&&cmtCache[pid].pages[page]){ renderCommentList(); return; }
+  if(cmtLoading) return;
+  cmtLoading=true;
+  if(showLoading) el.commentList.innerHTML='<div class="cmt-tip">加载中…</div>';
+  var off=(page-1)*cmtPerPage;
+  var xhr=new XMLHttpRequest();
+  xhr.open("GET",DB_URL+"/comments?select=id,nickname,content,created_at&photo_id=eq."+encodeURIComponent(pid)+"&order=created_at.asc&limit="+cmtPerPage+"&offset="+off,true);
+  xhr.setRequestHeader("apikey",SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);
+  xhr.setRequestHeader("Prefer","count=exact");
+  xhr.onload=function(){
+    cmtLoading=false;
+    if(xhr.status!==200){
+      el.commentList.innerHTML='<div class="cmt-tip">留言加载失败（'+xhr.status+'）<button class="btn btn-cancel" id="cmtRetry">重试</button></div>';
+      bindCmtRetry(); return;
+    }
+    try{
+      var arr=JSON.parse(xhr.responseText)||[];
+      var cr=xhr.getResponseHeader("Content-Range")||"";
+      var tm=cr.match(/\/(\d+)$/);
+      cmtTotal=tm?parseInt(tm[1],10):0;
+      if(!cmtCache[pid]) cmtCache[pid]={pages:{},total:0};
+      cmtCache[pid].pages[page]=arr;
+      cmtCache[pid].total=cmtTotal;
+      if(el.commentCount) el.commentCount.textContent=cmtTotal;
+      renderCommentList();
+    }catch(e){
+      el.commentList.innerHTML='<div class="cmt-tip">数据解析失败</div>';
+    }
+  };
+  xhr.onerror=function(){
+    cmtLoading=false;
+    el.commentList.innerHTML='<div class="cmt-tip">网络异常，加载失败<button class="btn btn-cancel" id="cmtRetry">重试</button></div>';
+    bindCmtRetry();
+  };
+  xhr.send();
+}
+function renderCommentList(){
+  var pid=cmtPhotoId;
+  var data=cmtCache[pid]&&cmtCache[pid].pages&&cmtCache[pid].pages[cmtPage];
+  var box=el.commentList;
+  box.classList.remove("cmt-anim"); void box.offsetWidth; box.classList.add("cmt-anim");
+  if(!data||!data.length){
+    box.innerHTML='<div class="cmt-empty">还没有留言，来写下第一条吧</div>';
+  }else{
+    var html="";
+    data.forEach(function(c){
+      html+='<div class="cmt-item"><div class="cmt-head"><span class="cmt-nick">'+he(c.nickname)+'</span><span class="cmt-time">'+he(fmtDateTime(c.created_at))+'</span></div><div class="cmt-body">'+he(c.content).replace(/\n/g,"<br>")+'</div></div>';
+    });
+    box.innerHTML=html;
+  }
+  renderCommentPager();
+}
+function renderCommentPager(){
+  var totalPages=Math.max(1,Math.ceil(cmtTotal/cmtPerPage));
+  var html='<button class="btn btn-cancel" id="cmtPrev"'+((cmtPage<=1)?" disabled":"")+'>上一页</button><span class="cmt-pageinfo">第 '+cmtPage+' / '+totalPages+' 页</span><button class="btn btn-cancel" id="cmtNext"'+((cmtPage>=totalPages)?" disabled":"")+'>下一页</button>';
+  el.commentPager.innerHTML=html;
+  var pv=document.getElementById("cmtPrev"), nx=document.getElementById("cmtNext");
+  if(pv) pv.addEventListener("click",function(){ if(cmtPage>1) loadComments(cmtPhotoId,cmtPage-1,true); });
+  if(nx) nx.addEventListener("click",function(){ if(cmtPage<totalPages) loadComments(cmtPhotoId,cmtPage+1,true); });
+}
+function openComments(){
+  var m=view[ci]; if(!m) return;
+  if(!IS_CLOUD){alert("留言功能需要联网使用");return;}
+  cmtPhotoId=m.id;
+  cmtPage=1;
+  el.commentSubTitle.textContent=(m.title||"")+(m.date?(" · "+formatDate(m.date)):"");
+  el.cmtErr.textContent="";
+  el.cmtNickname.value="";
+  el.cmtContent.value="";
+  el.commentOverlay.classList.add("open");
+  loadComments(cmtPhotoId,1,true);
+}
+function closeComments(){el.commentOverlay.classList.remove("open");}
+el.commentBtn.addEventListener("click",openComments);
+el.commentClose.addEventListener("click",closeComments);
+el.commentOverlay.addEventListener("click",function(e){if(e.target===e.currentTarget)closeComments();});
+el.cmtSubmit.addEventListener("click",function(){
+  if(!cmtPhotoId) return;
+  // 蜜罐字段：机器人填了就假装成功，不写入数据库
+  if(el.cmtHoneypot.value){ el.cmtNickname.value="";el.cmtContent.value="";el.cmtErr.textContent=""; return; }
+  var nick=el.cmtNickname.value.trim(), content=el.cmtContent.value.trim();
+  if(!nick){el.cmtErr.textContent="请填写昵称";return;}
+  if(nick.length>30){el.cmtErr.textContent="昵称不能超过 30 字";return;}
+  if(!content){el.cmtErr.textContent="请填写留言内容";return;}
+  if(content.length>500){el.cmtErr.textContent="留言不能超过 500 字";return;}
+  var last=0;
+  try{last=parseInt(localStorage.getItem("cmt_last_ts")||"0",10)||0;}catch(e){}
+  if(Date.now()-last<15000){el.cmtErr.textContent="留言太频繁，请 15 秒后再试";return;}
+  el.cmtSubmit.disabled=true;
+  el.cmtErr.textContent="";
+  var xhr=new XMLHttpRequest();
+  xhr.open("POST",DB_URL+"/comments",true);
+  xhr.setRequestHeader("apikey",SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);
+  xhr.setRequestHeader("Content-Type","application/json");
+  xhr.setRequestHeader("Prefer","return=minimal");
+  xhr.onload=function(){
+    el.cmtSubmit.disabled=false;
+    if(xhr.status>=200&&xhr.status<300){
+      try{localStorage.setItem("cmt_last_ts",String(Date.now()));}catch(e){}
+      el.cmtNickname.value="";el.cmtContent.value="";
+      el.cmtErr.textContent="";
+      delete cmtCache[cmtPhotoId];
+      var totalPages=Math.max(1,Math.ceil((cmtTotal+1)/cmtPerPage));
+      loadComments(cmtPhotoId,totalPages,true);
+    }else{
+      el.cmtErr.textContent="提交失败（"+xhr.status+"），请稍后重试";
+    }
+  };
+  xhr.onerror=function(){el.cmtSubmit.disabled=false;el.cmtErr.textContent="网络异常，提交失败";};
+  xhr.send(JSON.stringify({photo_id:cmtPhotoId,nickname:nick,content:content}));
+});
+function deleteComment(id,cb){
+  if(!AUTH_TOKEN){if(cb)cb("未登录");return;}
+  var xhr=new XMLHttpRequest();
+  xhr.open("DELETE",DB_URL+"/comments?id=eq."+encodeURIComponent(id),true);
+  xhr.setRequestHeader("apikey",SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+AUTH_TOKEN);
+  xhr.onload=function(){
+    if(xhr.status>=200&&xhr.status<300){if(cb)cb(null);}
+    else if(cb)cb("删除失败（"+xhr.status+"）");
+  };
+  xhr.onerror=function(){if(cb)cb("网络异常");};
+  xhr.send();
+}
+function renderCommentAdmin(){
+  var box=el.commentManageList;
+  box.innerHTML="加载中…";
+  var xhr=new XMLHttpRequest();
+  xhr.open("GET",DB_URL+"/comments?select=id,photo_id,nickname,content,created_at&order=created_at.desc&limit=500",true);
+  xhr.setRequestHeader("apikey",SUPABASE_KEY);
+  xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);
+  xhr.onload=function(){
+    if(xhr.status!==200){box.innerHTML="加载失败（"+xhr.status+"）";return;}
+    try{
+      var arr=JSON.parse(xhr.responseText)||[];
+      if(!arr.length){box.innerHTML='<div class="cm-empty">暂无留言</div>';return;}
+      var html="";
+      arr.forEach(function(c){
+        var pm=null;
+        ms.forEach(function(m){if(m.id===c.photo_id)pm=m;});
+        html+='<div class="cm-row" data-id="'+he(c.id)+'">'+
+          '<div class="cm-info">'+
+          '<div class="cm-nick">'+he(c.nickname)+'<span class="cm-time">'+he(fmtDateTime(c.created_at))+'</span></div>'+
+          '<div class="cm-phone">'+(pm?he(pm.title):("照片已删除（id:"+he(c.photo_id)+"）"))+'</div>'+
+          '<div class="cm-content">'+he(c.content).replace(/\n/g,"<br>")+'</div>'+
+          '</div>'+
+          '<button class="cm-del">删除</button></div>';
+      });
+      box.innerHTML=html;
+      box.querySelectorAll(".cm-del").forEach(function(b){
+        b.addEventListener("click",function(){
+          var row=b.closest(".cm-row"), id=row.dataset.id;
+          if(!window.confirm("确定删除这条留言吗？"))return;
+          deleteComment(id,function(err){
+            if(err){alert(err);return;}
+            if(cmtCache[cmtPhotoId])delete cmtCache[cmtPhotoId];
+            renderCommentAdmin();
+            if(cmtPhotoId) fetchCommentCount(cmtPhotoId);
+          });
+        });
+      });
+    }catch(e){box.innerHTML="数据解析失败";}
+  };
+  xhr.onerror=function(){box.innerHTML="网络异常";};
+  xhr.send();
+}
 
 // ===== Effects =====
 function randomEffect(){var fx=[lightLeak,bokehEffect,sparkleEffect,shutterFlash];fx[Math.floor(Math.random()*fx.length)]();}
@@ -1401,16 +1886,16 @@ function startParticles(){
 
 // ===== Events =====
 function bindEvents(){
-  document.addEventListener("wheel",function(e){if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open"))return;e.preventDefault();if(e.deltaY>0)nextImg();else prevImg();},{passive:false});
+  document.addEventListener("wheel",function(e){if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open")||el.commentOverlay.classList.contains("open"))return;e.preventDefault();if(e.deltaY>0)nextImg();else prevImg();},{passive:false});
   document.addEventListener("keydown",function(e){
-    if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open"))return;
+    if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open")||el.commentOverlay.classList.contains("open"))return;
     if(e.key==="ArrowLeft"||e.key==="ArrowUp")prevImg();else if(e.key==="ArrowRight"||e.key==="ArrowDown")nextImg();});
   el.navPrev.addEventListener("click",prevImg);el.navNext.addEventListener("click",nextImg);
   window.addEventListener("resize",function(){var c=el.particleCanvas;if(c){c.width=window.innerWidth;c.height=window.innerHeight;}});
   // Touch swipe for mobile
   var tx=0,ty=0;
   document.addEventListener("touchstart",function(e){
-    if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open")||el.compressingOverlay.classList.contains("show")||el.previewOverlay.classList.contains("open")){tx=0;return}
+    if(el.uploadModal.classList.contains("open")||el.adminPanel.classList.contains("open")||el.confirmDialog.classList.contains("open")||el.commentOverlay.classList.contains("open")||el.compressingOverlay.classList.contains("show")||el.previewOverlay.classList.contains("open")){tx=0;return}
     tx=e.changedTouches[0].screenX;ty=e.changedTouches[0].screenY;
   },{passive:true});
   document.addEventListener("touchend",function(e){
