@@ -266,6 +266,41 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 #adminPanel{flex-direction:column;align-items:stretch;background:rgba(15,11,8,0.96);backdrop-filter:blur(6px)}
 #adminPanel .admin-header,#adminPanel .admin-body,#adminPanel .admin-footer{width:100%;background:linear-gradient(180deg,rgba(24,18,13,0.97),rgba(16,12,9,0.98))}
 #adminPanel .admin-body{flex:1;min-height:0;overflow-y:auto}
+/* ===== 音乐管理全屏视图 ===== */
+#musicView{flex-direction:column;align-items:stretch;background:rgba(15,11,8,0.96);backdrop-filter:blur(6px);z-index:160}
+#musicView .admin-header,#musicView .admin-body,#musicView .admin-footer{width:100%;background:linear-gradient(180deg,rgba(24,18,13,0.97),rgba(16,12,9,0.98))}
+#musicView .admin-body{flex:1;min-height:0;overflow-y:auto}
+.music-manage-entry{width:100%;margin-top:2px}
+.music-add-form{display:flex;flex-direction:column;gap:8px}
+.music-add-form select,.music-add-form input{width:100%;padding:6px 10px;background:rgba(26,20,16,0.5);border:1px solid rgba(196,169,125,0.15);border-radius:3px;color:#d4c5a9;font-size:13px;outline:none;font-family:inherit;box-sizing:border-box}
+.music-add-form select:focus,.music-add-form input:focus{border-color:rgba(196,169,125,0.4)}
+.music-add-btns{display:flex;gap:8px;flex-wrap:wrap}
+.music-add-btns .btn{flex:1;min-width:120px}
+.ml-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed rgba(196,169,125,0.1)}
+.ml-row:last-child{border-bottom:none}
+.ml-thumb{width:46px;height:46px;flex:none;border-radius:3px;overflow:hidden;background:#f5ede1;padding:2px 2px 4px;box-sizing:border-box}
+.ml-thumb img{width:100%;height:100%;object-fit:cover;display:block;filter:sepia(0.2)}
+.ml-info{flex:1;min-width:0}
+.ml-name{color:#e8d5b0;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-photo{color:#a08970;font-size:11px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-url{color:#6a5535;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ml-row button{background:rgba(196,169,125,0.1);border:1px solid rgba(196,169,125,0.2);color:#c4a97d;padding:4px 10px;border-radius:3px;cursor:pointer;font-size:11px;font-family:inherit;flex:none}
+.ml-row button:hover{background:rgba(196,169,125,0.2)}
+.ml-row .ml-del{background:rgba(180,80,60,0.15);border-color:rgba(180,80,60,0.3);color:#d48a6a}
+.ml-edit-form{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.ml-edit-form input,.ml-edit-form select{width:100%;padding:5px 8px;background:rgba(26,20,16,0.5);border:1px solid rgba(196,169,125,0.15);border-radius:3px;color:#d4c5a9;font-size:12px;outline:none;font-family:inherit;box-sizing:border-box}
+.ml-e-btns{display:flex;gap:6px;flex-wrap:wrap}
+.ml-e-btns button{font-size:11px;padding:3px 8px}
+.ml-e-msg{font-size:11px;flex-basis:100%}
+@media(max-width:768px){
+#musicView .admin-header{flex-direction:row;justify-content:space-between;align-items:center;padding:12px 14px}
+#musicView .admin-body{padding:12px}
+#musicView .admin-footer{padding:12px 14px}
+#musicView .admin-footer .btn{flex:1}
+.ml-row{flex-wrap:wrap}
+.ml-edit-form{flex-basis:100%}
+.ml-thumb{width:40px;height:40px}
+}
 .cat-item.bold{font-weight:700;font-size:15px;color:#e8d5b0}
 .cm-bold-label{display:flex;align-items:center;gap:3px;font-size:12px;color:#8b7355;white-space:nowrap;cursor:pointer}
 .cm-bold-label input{accent-color:#c4a97d;margin:0}
@@ -320,6 +355,26 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 .music-progress{flex:1;height:3px;background:rgba(196,169,125,0.15);border-radius:2px;cursor:pointer;position:relative}
 .music-progress-fill{height:100%;width:0;background:#c4a97d;border-radius:2px}
 .music-time{font-size:10px;color:#6a5535;white-space:nowrap;flex:none}
+.music-lock{width:26px;height:26px;flex:none;border-radius:50%;background:rgba(196,169,125,0.08);border:1px dashed rgba(196,169,125,0.3);color:#a08970;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;font-family:inherit;line-height:1}
+.music-lock:hover{background:rgba(196,169,125,0.2);color:#e8d5b0}
+.music-lock.on{background:rgba(196,169,125,0.25);border-style:solid;color:#e8d5b0}
+/* ===== 锁定播放悬浮条（右下角）===== */
+.floating-player{position:fixed;right:18px;bottom:18px;z-index:140;display:none;align-items:center;gap:8px;padding:8px 14px;background:rgba(24,18,13,0.96);border:1px solid rgba(196,169,125,0.3);border-radius:24px;box-shadow:0 10px 34px rgba(0,0,0,.55);backdrop-filter:blur(6px);max-width:min(420px,94vw);box-sizing:border-box}
+.floating-player.show{display:flex}
+.fp-play{width:30px;height:30px;flex:none;border-radius:50%;background:rgba(196,169,125,0.15);border:1px solid rgba(196,169,125,0.35);color:#c4a97d;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;font-family:inherit;line-height:1}
+.fp-play:hover{background:rgba(196,169,125,0.25)}
+.fp-name{font-size:12px;color:#a08970;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:none}
+.fp-progress{flex:1;min-width:60px;height:3px;background:rgba(196,169,125,0.15);border-radius:2px;cursor:pointer;position:relative}
+.fp-progress-fill{height:100%;width:0;background:#c4a97d;border-radius:2px}
+.fp-time{font-size:10px;color:#6a5535;white-space:nowrap;flex:none}
+.floating-player select{max-width:110px;padding:4px 6px;background:rgba(26,20,16,0.8);border:1px solid rgba(196,169,125,0.25);border-radius:3px;color:#d4c5a9;font-size:11px;outline:none;font-family:inherit}
+.fp-unlock{background:rgba(196,169,125,0.12);border:1px solid rgba(196,169,125,0.3);color:#c4a97d;padding:4px 10px;border-radius:12px;cursor:pointer;font-size:11px;font-family:inherit;letter-spacing:1px;flex:none}
+.fp-unlock:hover{background:rgba(196,169,125,0.22)}
+@media(max-width:560px){
+.floating-player{right:10px;bottom:10px;left:10px;max-width:none;flex-wrap:wrap;justify-content:center;border-radius:16px;padding:8px 10px}
+.fp-name{max-width:70%}
+.floating-player select{max-width:80px}
+}
 .comment-btn{margin-top:12px;padding:6px 18px;background:rgba(196,169,125,0.08);border:1px dashed rgba(196,169,125,0.3);border-radius:16px;color:#c4a97d;font-size:13px;letter-spacing:1px;cursor:pointer;transition:all .3s;font-family:inherit}
 .comment-btn:hover{background:rgba(196,169,125,0.18);border-style:solid}
 .comment-count{margin-left:6px;padding:0 7px;background:rgba(196,169,125,0.15);border-radius:8px;font-size:11px;color:#e8d5b0}
@@ -413,6 +468,7 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <div class="photo-date" id="photoDate">2025.05</div>
 <div class="music-bar" id="musicBar">
 <button class="music-play" id="musicPlay" title="播放 / 暂停">&#9654;</button>
+<button class="music-lock" id="musicLock" title="锁定播放（切照片不换歌）">&#128204;</button>
 <span class="music-name" id="musicName">配乐</span>
 <div class="music-progress" id="musicProgress"><div class="music-progress-fill" id="musicProgressFill"></div></div>
 <span class="music-time" id="musicTime">0:00</span>
@@ -453,6 +509,10 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <div class="cat-manage" id="commentManageSection">
 <div class="cat-manage-header">留言管理</div>
 <div id="commentManageList"></div>
+</div>
+<div class="cat-manage" id="musicManageSection">
+<div class="cat-manage-header">音乐管理</div>
+<button class="btn btn-submit music-manage-entry" id="musicManageBtn">进入音乐管理（<span id="musicLibCount">0</span> 首）</button>
 </div>
 <div class="admin-grid" id="adminGrid"></div>
 <div class="admin-footer">
@@ -502,6 +562,15 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 </div>
 
 
+<div class="floating-player" id="floatingPlayer">
+<button class="fp-play" id="fpPlay" title="播放 / 暂停">&#9654;</button>
+<span class="fp-name" id="fpName">配乐</span>
+<div class="fp-progress" id="fpProgress"><div class="fp-progress-fill" id="fpProgressFill"></div></div>
+<span class="fp-time" id="fpTime">0:00</span>
+<select id="fpSelect" title="切换曲目"></select>
+<button class="fp-unlock" id="fpUnlock">解锁</button>
+</div>
+
 <div class="comment-overlay" id="commentOverlay">
 <div class="comment-panel">
 <div class="comment-header">
@@ -522,6 +591,36 @@ body{font-family:Georgia,serif;color:#d4c5a9}
 <button class="btn btn-submit" id="cmtSubmit">发表留言</button>
 </div>
 </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="musicView">
+<div class="admin-header">
+<h2>&#9835; 音乐管理</h2>
+<button class="admin-close" id="musicViewClose">&times;</button>
+</div>
+<div class="admin-body">
+<div class="cat-manage">
+<div class="cat-manage-header">新增音乐（一首歌对应一张照片）</div>
+<div class="music-add-form">
+<select id="muPhotoSel"></select>
+<input type="text" id="muNameInput" maxlength="60" placeholder="曲名（可选，默认取文件名）">
+<div class="music-add-btns">
+<button class="btn btn-submit" id="muUploadBtn">上传音乐文件</button>
+<button class="btn btn-cancel" id="muLinkBtn">填外链</button>
+<input type="file" id="muFileInput" accept="audio/*,.mp3,.m4a,.ogg,.wav" style="display:none">
+</div>
+<span class="cmt-err" id="muMsg"></span>
+</div>
+</div>
+<div class="cat-manage">
+<div class="cat-manage-header">全部音乐（<span id="musicLibCount2">0</span> 首）</div>
+<div id="musicLibList"></div>
+</div>
+</div>
+<div class="admin-footer">
+<button class="btn btn-cancel" id="musicCancelBtn">关闭</button>
+<button class="btn btn-submit" id="musicSaveBtn">保存更改</button>
 </div>
 </div>
 
@@ -573,9 +672,10 @@ var SD = [
 var ms = [], ci = 0, deleteTarget = null, previewTarget = -1, pwdCallback = null;
 var curCat = "全部", catList = ["全部"], view = [], catOrder = [], catBold = [], catChildren = {}, expandedCats = {};
 var el = {}, selectedFiles = [];
+var musicLib = [], musicLocked = false, lockedSongId = null;
 var IS_CLOUD = true;
 
-var ids = ["currentImg","prevImg","nextImg","photoTitle","photoDate","yearLabel","lightLeak","bgLayer","counter","photoFrame","timelineDots","shutterFlash","particleCanvas","navPrev","navNext","mainImage","uploadBtn","manageBtn","fileInput","uploadModal","modalClose","cancelBtn","submitBtn","titleInput","dateInput","uploadArea","adminPanel","adminClose","adminGrid","adminSaveBtn","adminCancelBtn","confirmDialog","confirmCancel","confirmOk","confirmMsg","compressingOverlay","previewOverlay","previewClose","previewImg","previewRotL","previewRotR","previewSave","pwdOverlay","pwdInput","pwdErr","pwdCancel","pwdSubmit","catSidebar","catList","catToggle","catMask","catManageList","catNewName","catCreateBtn","catInput","compressingText","musicBar","musicPlay","musicName","musicTime","musicProgress","musicProgressFill","commentBtn","commentCount","commentOverlay","commentClose","commentSubTitle","commentList","commentPager","cmtNickname","cmtHoneypot","cmtContent","cmtSubmit","cmtErr","commentManageList"];
+var ids = ["currentImg","prevImg","nextImg","photoTitle","photoDate","yearLabel","lightLeak","bgLayer","counter","photoFrame","timelineDots","shutterFlash","particleCanvas","navPrev","navNext","mainImage","uploadBtn","manageBtn","fileInput","uploadModal","modalClose","cancelBtn","submitBtn","titleInput","dateInput","uploadArea","adminPanel","adminClose","adminGrid","adminSaveBtn","adminCancelBtn","confirmDialog","confirmCancel","confirmOk","confirmMsg","compressingOverlay","previewOverlay","previewClose","previewImg","previewRotL","previewRotR","previewSave","pwdOverlay","pwdInput","pwdErr","pwdCancel","pwdSubmit","catSidebar","catList","catToggle","catMask","catManageList","catNewName","catCreateBtn","catInput","compressingText","musicBar","musicPlay","musicLock","musicName","musicTime","musicProgress","musicProgressFill","floatingPlayer","fpPlay","fpName","fpTime","fpProgress","fpProgressFill","fpSelect","fpUnlock","commentBtn","commentCount","commentOverlay","commentClose","commentSubTitle","commentList","commentPager","cmtNickname","cmtHoneypot","cmtContent","cmtSubmit","cmtErr","commentManageList","musicView","musicViewClose","musicManageBtn","musicLibCount","musicLibCount2","muPhotoSel","muNameInput","muUploadBtn","muLinkBtn","muFileInput","muMsg","musicLibList","musicCancelBtn","musicSaveBtn"];
 ids.forEach(function(id){el[id]=document.getElementById(id);});
 
 // ===== Init =====
@@ -585,7 +685,7 @@ function init(){
   bindEvents();
   startParticles();
   document.addEventListener("keydown", function(e){
-    if(e.key==="Escape"){closeUpload();closeAdmin();closeConfirm();closeComments();}
+    if(e.key==="Escape"){closeMusicView();closeUpload();closeAdmin();closeConfirm();closeComments();}
   });
 }
 
@@ -603,10 +703,12 @@ function loadMemories(cb){
           if(Array.isArray(cloud)){
             if(cloud.length) ms=cloud;
             catOrder=[];catBold=[];catChildren={};
+            musicLib=[];
             finishLoad(cb); return;
           }else if(cloud&&Array.isArray(cloud.photos)){
             if(cloud.photos.length) ms=cloud.photos;
             catOrder=cloud.cats||[];catBold=cloud.catBold||[];catChildren=cloud.catChildren||{};
+            musicLib=Array.isArray(cloud.musicLibrary)?JSON.parse(JSON.stringify(cloud.musicLibrary)):[];
             finishLoad(cb); return;
           }
         }catch(e){}
@@ -658,12 +760,15 @@ function mergeBucketOrphans(names){
 function finishLoad(cb){
   listBucketFiles(function(err,names){
     if(!err) mergeBucketOrphans(names);
-    try{localStorage.setItem("memoir_list",JSON.stringify({cats:catOrder,catBold:catBold,catChildren:catChildren,photos:ms}));}catch(e){}
+    migrateMusicLibrary();
+    try{localStorage.setItem("memoir_list",JSON.stringify({cats:catOrder,catBold:catBold,catChildren:catChildren,photos:ms,musicLibrary:musicLib}));}catch(e){}
+    renderMusicManageBtn();
     if(cb) cb();
   });
 }
 function loadLocalFallback(cb){
   ms = JSON.parse(JSON.stringify(SD));
+  musicLib = [];
   try{
     var saved=localStorage.getItem("memoir_list");
     if(saved){
@@ -673,10 +778,13 @@ function loadLocalFallback(cb){
         extra.forEach(function(x){if(!m[x.id])ms.push(x);});
       }else if(extra&&Array.isArray(extra.photos)){
         catOrder=extra.cats||[];catBold=extra.catBold||[];catChildren=extra.catChildren||{};
+        if(Array.isArray(extra.musicLibrary)) musicLib=JSON.parse(JSON.stringify(extra.musicLibrary));
         extra.photos.forEach(function(x){if(!m[x.id])ms.push(x);});
       }
     }
   }catch(e){}
+  migrateMusicLibrary();
+  renderMusicManageBtn();
   if(cb) cb();
 }
 function saveManifest(cb){
@@ -684,7 +792,7 @@ function saveManifest(cb){
   // 【安全加固】写入相册列表(manifest.json)必须使用登录后的 AUTH_TOKEN
   // 未登录直接拒绝，禁止降级为公开的 anon key（RLS 已禁止匿名写入）
   if(!AUTH_TOKEN){ alert("请先登录管理员账号再保存"); cb(false); return; }
-  var payload={cats:catOrder,catBold:catBold,catChildren:catChildren,photos:ms};
+  var payload={cats:catOrder,catBold:catBold,catChildren:catChildren,photos:ms,musicLibrary:musicLib};
   var json = JSON.stringify(payload);
   if(!IS_CLOUD){
     try{localStorage.setItem("memoir_list",json);}catch(e){}
@@ -1330,7 +1438,7 @@ el.submitBtn.addEventListener("click",function(){
 });
 
 // ===== Admin =====
-function openAdmin(){showPwdModal(function(){renderAdminGrid();renderCatManage();renderCommentAdmin();el.adminPanel.classList.add("open");});}
+function openAdmin(){showPwdModal(function(){renderAdminGrid();renderCatManage();renderCommentAdmin();renderMusicManageBtn();el.adminPanel.classList.add("open");});}
 function closeAdmin(){el.adminPanel.classList.remove("open");}
 
 function renderAdminGrid(){
@@ -1344,14 +1452,11 @@ function renderAdminGrid(){
       '<div style="display:flex;gap:6px"><input class="ad" type="date" value="'+he(m.date||"")+'" style="flex:1">'+
       '<input class="ai" type="number" value="'+(i+1)+'" min="1" max="'+ms.length+'" style="width:50px"></div>'+
       '<div class="ac"></div>'+
-      '<div class="admin-music">'+
+            '<div class="admin-music">'+
       '<span class="am-label">音乐</span>'+
-      '<button class="am-up">上传</button>'+
-      '<button class="am-link">填外链</button>'+
       '<button class="am-play">试听</button>'+
-      '<button class="am-clear">清除</button>'+
-      '<span class="am-name">'+(m.musicName?he(m.musicName):(m.music?"已配乐":"未配乐"))+'</span>'+
-      '<input type="file" class="am-file" accept="audio/*,.mp3,.m4a,.ogg,.wav" style="display:none">'+
+      '<button class="am-goto">去音乐管理</button>'+
+      '<span class="am-name">'+(amName(m))+'</span>'+
       '</div></div>'+
 
       '<div class="admin-card-actions"><button class="up-btn" data-i="'+i+'">&#8593;</button>'+
@@ -1363,71 +1468,23 @@ function renderAdminGrid(){
     var acDiv=c.querySelector(".ac");
     if(acDiv){acDiv._sel=makeCatPair(acDiv,m.cat||"未分类",function(v){m.cat=v;renderCatManage();});}
   });
-  // ===== 音乐管理（每张照片卡片：上传/外链/试听/清除） =====
-  el.adminGrid.querySelectorAll(".am-up").forEach(function(b){
-    b.addEventListener("click",function(){ b.closest(".admin-music").querySelector(".am-file").click(); });
-  });
-  el.adminGrid.querySelectorAll(".am-file").forEach(function(inp){
-    inp.addEventListener("change",function(){
-      var idx=parseInt(inp.closest(".admin-card").dataset.idx);
-      var f=inp.files&&inp.files[0];
-      inp.value="";
-      if(!f) return;
-      if(!/\.(mp3|m4a|ogg|wav)$/i.test(f.name)){alert("仅支持 mp3/m4a/ogg/wav 格式");return;}
-      if(f.size>20*1024*1024){alert("音频文件不能超过 20MB");return;}
-      var nameEl=inp.closest(".admin-music").querySelector(".am-name");
-      nameEl.textContent="上传中…";
-      uploadAudioToSupabase(f,function(err,url){
-        if(err){nameEl.textContent="";alert("上传失败："+err);return;}
-        ms[idx].music=url;
-        ms[idx].musicName=f.name.replace(/\.[^.]+$/,"");
-        nameEl.textContent=ms[idx].musicName;
-        updateDisplay();
-      });
-    });
-  });
-  el.adminGrid.querySelectorAll(".am-link").forEach(function(b){
-    b.addEventListener("click",function(){
-      var card=b.closest(".admin-card");
-      var idx=parseInt(card.dataset.idx);
-      var m=ms[idx];
-      var url=window.prompt("粘贴音乐直链（仅支持 http/https 开头）：",m.music||"");
-      if(url===null) return;
-      url=url.trim();
-      if(!/^https?:\/\//i.test(url)){alert("链接必须以 http:// 或 https:// 开头");return;}
-      m.music=url;
-      if(!m.musicName){
-        var nm=decodeURIComponent(url.split("/").pop().split("?")[0]).replace(/\.[^.]+$/,"");
-        m.musicName=nm||"外链配乐";
-      }
-      card.querySelector(".am-name").textContent=m.musicName;
-    });
-  });
+  // ===== 音乐管理（每张照片卡片：只读显示 + 试听 + 去音乐管理） =====
   el.adminGrid.querySelectorAll(".am-play").forEach(function(b){
     b.addEventListener("click",function(){
       var idx=parseInt(b.closest(".admin-card").dataset.idx);
       var m=ms[idx];
-      if(!m||!m.music){alert("这张照片还没有音乐");return;}
+      var song=photoMusic(m);
+      if(!song){alert("这张照片还没有音乐");return;}
       if(!adminAudio){adminAudio=new Audio();adminAudio.preload="metadata";}
       var cur=adminAudio.src;
-      if(cur&&cur.indexOf(m.music)>=0&&!adminAudio.paused){adminAudio.pause();b.textContent="试听";return;}
-      adminAudio.src=m.music;
+      if(cur&&cur.indexOf(song.url)>=0&&!adminAudio.paused){adminAudio.pause();b.textContent="试听";return;}
+      adminAudio.src=song.url;
       adminAudio.play().then(function(){b.textContent="停止";}).catch(function(){b.textContent="试听";alert("试听失败，请检查音频地址是否有效");});
       adminAudio.onended=function(){b.textContent="试听";};
     });
   });
-  el.adminGrid.querySelectorAll(".am-clear").forEach(function(b){
-    b.addEventListener("click",function(){
-      var idx=parseInt(b.closest(".admin-card").dataset.idx);
-      var m=ms[idx];
-      if(!m||!m.music){alert("这张照片还没有音乐");return;}
-      if(!window.confirm("确定清除这张照片的音乐吗？"))return;
-      var url=m.music;
-      delete m.music; delete m.musicName;
-      b.closest(".admin-card").querySelector(".am-name").textContent="未配乐";
-      if(url&&url.indexOf("/object/public/"+BUCKET_NAME+"/")>=0) removeAudioFromSupabase({music:url});
-      if(adminAudio){adminAudio.pause();adminAudio.src="";}
-    });
+  el.adminGrid.querySelectorAll(".am-goto").forEach(function(b){
+    b.addEventListener("click",function(){openMusicView();});
   });
   el.adminGrid.querySelectorAll(".up-btn").forEach(function(b){
     b.addEventListener("click",function(){
@@ -1501,6 +1558,7 @@ el.adminSaveBtn.addEventListener("click",function(){
     var og=ms[idx];
     nm.push(Object.assign({}, og, {title:c.querySelector(".at").value.trim()||og.title, date:c.querySelector(".ad").value||og.date, rotate:og.rotate||0, cat:(c.querySelector(".ac")&&c.querySelector(".ac")._sel)?(c.querySelector(".ac")._sel.value()||"未分类"):(og.cat||"未分类")}));
   });
+  nm.forEach(function(x){delete x.music;delete x.musicName;});
   if(nm.length){ms=nm;}
   saveManifest(function(){
     buildCats();
@@ -1541,10 +1599,12 @@ function removeFromSupabase(m){
 function removeAudioFromSupabase(m){
   // 【安全加固】删除云端音乐必须携带登录后的 AUTH_TOKEN，未登录直接拒绝
   if(!AUTH_TOKEN) return;
-  if(!m||!m.music) return;
-  var p="/object/public/"+BUCKET_NAME+"/", i=m.music.indexOf(p);
+  if(!m) return;
+  var u=m.music||m.url;
+  if(!u) return;
+  var p="/object/public/"+BUCKET_NAME+"/", i=u.indexOf(p);
   if(i<0) return;
-  var fn=m.music.substring(i+p.length).split("?")[0];
+  var fn=u.substring(i+p.length).split("?")[0];
   if(!fn) return;
   var xhr=new XMLHttpRequest();
   xhr.open("DELETE",STORAGE_URL+"/object/"+BUCKET_NAME+"/"+fn,true);
@@ -1565,13 +1625,19 @@ el.confirmOk.addEventListener("click",function(){
   if(deleteTarget===null)return;
   var removed=ms[deleteTarget];
   ms.splice(deleteTarget,1);
+  var song=removed?photoMusic(removed):null;
+  if(song){
+    if(musicLocked&&lockedSongId===song.id) unlockSong();
+    removeAudioFromSupabase(song);
+    var li=musicLib.indexOf(song);
+    if(li>=0) musicLib.splice(li,1);
+  }
   saveManifest(function(){
     renderAdminGrid();renderTimeline();
     if(ci>=ms.length)ci=Math.max(0,ms.length-1);
     updateDisplay();
   });
   removeFromSupabase(removed);
-  removeAudioFromSupabase(removed);
   closeConfirm();deleteTarget=null;
 });
 el.confirmCancel.addEventListener("click",closeConfirm);
@@ -1580,26 +1646,292 @@ function closeConfirm(){el.confirmDialog.classList.remove("open");deleteTarget=n
 function he(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 
 // ===== 音乐播放（前台播放条，切换照片自动停止，不自动播放） =====
+// ===== 音乐库（musicLibrary）+ 音乐管理视图 + 锁定播放 =====
+function libById(id){
+  if(!id) return null;
+  for(var i=0;i<musicLib.length;i++) if(musicLib[i].id===id) return musicLib[i];
+  return null;
+}
+function photoById(id){
+  if(!id) return null;
+  for(var i=0;i<ms.length;i++) if(ms[i].id===id) return ms[i];
+  return null;
+}
+function photoMusic(m){
+  if(!m||!m.musicId) return null;
+  return libById(m.musicId);
+}
+function amName(m){
+  var s=photoMusic(m);
+  return s?(s.name||"配乐"):"未配乐";
+}
+function migrateMusicLibrary(){
+  var changed=false;
+  if(!Array.isArray(musicLib)) musicLib=[];
+  var seen={};
+  musicLib.forEach(function(s){
+    if(s.photoId||s.url) seen[(s.photoId||"")+"|"+(s.url||"")]=s;
+  });
+  ms.forEach(function(m){
+    if(!m||!m.music) return;
+    var k=(m.id||"")+"|"+m.music;
+    var s=seen[k];
+    if(!s){
+      s={id:"ml"+Date.now()+"_"+Math.random().toString(36).slice(2,6), name:m.musicName||"配乐", url:m.music, photoId:m.id, createdAt:new Date().toISOString()};
+      musicLib.push(s);
+      seen[k]=s;
+    }
+    m.musicId=s.id;
+    delete m.music;
+    delete m.musicName;
+    changed=true;
+  });
+  return changed;
+}
+function renderMusicManageBtn(){
+  var n=musicLib.length;
+  if(el.musicLibCount) el.musicLibCount.textContent=n;
+  if(el.musicLibCount2) el.musicLibCount2.textContent=n;
+}
+function openMusicView(){
+  renderMusicView();
+  el.musicView.classList.add("open");
+}
+function closeMusicView(){
+  el.musicView.classList.remove("open");
+}
+function renderMusicView(){
+  renderMusicManageBtn();
+  el.muPhotoSel.innerHTML="";
+  var bound={};
+  musicLib.forEach(function(s){if(s.photoId)bound[s.photoId]=true;});
+  ms.forEach(function(m){
+    var o=document.createElement("option");
+    o.value=m.id;
+    o.textContent=m.title+(bound[m.id]?"（已有配乐）":"");
+    if(bound[m.id]) o.disabled=true;
+    el.muPhotoSel.appendChild(o);
+  });
+  el.muNameInput.value="";
+  el.muMsg.textContent="";
+  renderMusicLibList();
+}
+function renderMusicLibList(){
+  renderMusicManageBtn();
+  var box=el.musicLibList;
+  box.innerHTML="";
+  if(!musicLib.length){
+    box.innerHTML='<div class="cm-empty">暂无音乐，请先在上方新增</div>';
+    return;
+  }
+  musicLib.forEach(function(s){
+    var ph=photoById(s.photoId);
+    var row=document.createElement("div");
+    row.className="ml-row"; row.dataset.id=s.id;
+    var thumb=ph&&ph.url?'<div class="ml-thumb"><img src="'+he(ph.url)+'" alt=""></div>':'<div class="ml-thumb"></div>';
+    row.innerHTML=thumb+
+      '<div class="ml-info">'+
+      '<div class="ml-name">'+he(s.name||"配乐")+'</div>'+
+      '<div class="ml-photo">'+(ph?"所属照片："+he(ph.title):"未绑定照片")+'</div>'+
+      '<div class="ml-url">'+he(s.url)+'</div>'+
+      '</div>'+
+      '<button class="ml-play">试听</button>'+
+      '<button class="ml-edit">修改</button>'+
+      '<button class="ml-del">删除</button>';
+    box.appendChild(row);
+  });
+  box.querySelectorAll(".ml-play").forEach(function(b){
+    b.addEventListener("click",function(){
+      var s=libById(b.closest(".ml-row").dataset.id);
+      if(!s)return;
+      if(!adminAudio){adminAudio=new Audio();adminAudio.preload="metadata";}
+      var cur=adminAudio.src;
+      if(cur&&cur.indexOf(s.url)>=0&&!adminAudio.paused){adminAudio.pause();b.textContent="试听";return;}
+      adminAudio.src=s.url;
+      adminAudio.play().then(function(){b.textContent="停止";}).catch(function(){b.textContent="试听";alert("试听失败，请检查音频地址是否有效");});
+      adminAudio.onended=function(){b.textContent="试听";};
+    });
+  });
+  box.querySelectorAll(".ml-del").forEach(function(b){
+    b.addEventListener("click",function(){
+      var s=libById(b.closest(".ml-row").dataset.id);
+      if(!s)return;
+      if(!window.confirm("确定删除音乐「"+(s.name||"配乐")+"」吗？将同时删除云端音频文件并解绑照片。"))return;
+      deleteSong(s);
+    });
+  });
+  box.querySelectorAll(".ml-edit").forEach(function(b){
+    b.addEventListener("click",function(){
+      var row=b.closest(".ml-row");
+      var s=libById(row.dataset.id);
+      if(!s)return;
+      renderEditRow(row,s);
+    });
+  });
+}
+function renderEditRow(row,s){
+  row.innerHTML="";
+  var f=document.createElement("div");
+  f.className="ml-edit-form";
+  var name=document.createElement("input");
+  name.className="ml-e-name"; name.value=s.name||""; name.placeholder="曲名";
+  var sel=document.createElement("select");
+  sel.className="ml-e-photo";
+  var bound={}; if(s.photoId)bound[s.photoId]=true;
+  musicLib.forEach(function(x){if(x.photoId)bound[x.photoId]=true;});
+  ms.forEach(function(m){
+    var o=document.createElement("option");
+    o.value=m.id; o.textContent=m.title;
+    if(bound[m.id]&&m.id!==s.photoId) o.disabled=true;
+    if(m.id===s.photoId) o.selected=true;
+    sel.appendChild(o);
+  });
+  var btns=document.createElement("div");
+  btns.className="ml-e-btns";
+  var up=document.createElement("button"); up.type="button"; up.className="ml-e-upload"; up.textContent="上传替换音频";
+  var link=document.createElement("button"); link.type="button"; link.className="ml-e-link"; link.textContent="填外链";
+  var save=document.createElement("button"); save.type="button"; save.className="btn btn-submit ml-e-save"; save.textContent="保存";
+  var cancel=document.createElement("button"); cancel.type="button"; cancel.className="btn btn-cancel ml-e-cancel"; cancel.textContent="取消";
+  var msg=document.createElement("span"); msg.className="cmt-err ml-e-msg";
+  var file=document.createElement("input"); file.type="file"; file.className="ml-e-file";
+  file.accept="audio/*,.mp3,.m4a,.ogg,.wav"; file.style.display="none";
+  btns.appendChild(up); btns.appendChild(link); btns.appendChild(save); btns.appendChild(cancel);
+  f.appendChild(name); f.appendChild(sel); f.appendChild(btns); f.appendChild(file); f.appendChild(msg);
+  row.appendChild(f);
+  var pending=null;
+  up.addEventListener("click",function(){file.click();});
+  file.addEventListener("change",function(){
+    var fl=file.files&&file.files[0]; file.value="";
+    if(!fl)return;
+    if(!/\.(mp3|m4a|ogg|wav)$/i.test(fl.name)){msg.textContent="仅支持 mp3/m4a/ogg/wav 格式";return;}
+    if(fl.size>20*1024*1024){msg.textContent="音频文件不能超过 20MB";return;}
+    msg.textContent="上传中…";
+    uploadAudioToSupabase(fl,function(err,url){
+      if(err){msg.textContent="上传失败："+err;return;}
+      pending={url:url,name:fl.name.replace(/\.[^.]+$/,"")};
+      msg.textContent="已上传新音频，点击「保存」生效";
+    });
+  });
+  link.addEventListener("click",function(){
+    var u=window.prompt("粘贴音频直链（仅支持 http/https 开头）",s.url);
+    if(u===null)return;
+    u=u.trim();
+    if(!/^https?:\/\//i.test(u)){alert("链接必须以 http:// 或 https:// 开头");return;}
+    pending={url:u,name:decodeURIComponent(u.split("/").pop().split("?")[0]).replace(/\.[^.]+$/,"")||s.name};
+    msg.textContent="已填入外链，点击「保存」生效";
+  });
+  cancel.addEventListener("click",function(){renderMusicLibList();});
+  save.addEventListener("click",function(){
+    var oldPh=photoById(s.photoId);
+    var nm=name.value.trim();
+    if(nm) s.name=nm;
+    if(pending&&pending.url){
+      if(s.url&&s.url!==pending.url&&s.url.indexOf("/object/public/"+BUCKET_NAME+"/")>=0) removeAudioFromSupabase(s);
+      s.url=pending.url;
+      if(pending.name) s.name=pending.name;
+    }
+    var newPhId=sel.value||null;
+    s.photoId=newPhId;
+    if(oldPh&&oldPh.musicId===s.id&&oldPh.id!==newPhId) delete oldPh.musicId;
+    var newPh=photoById(newPhId);
+    if(newPh) newPh.musicId=s.id;
+    renderMusicView();
+    renderAdminGrid();
+    updateDisplay();
+  });
+}
+function deleteSong(s){
+  if(!s)return;
+  if(musicLocked&&lockedSongId===s.id) unlockSong();
+  var ph=photoById(s.photoId);
+  if(ph&&ph.musicId===s.id) delete ph.musicId;
+  removeAudioFromSupabase(s);
+  var i=musicLib.indexOf(s);
+  if(i>=0) musicLib.splice(i,1);
+  if(audioEl&&audioEl.src&&audioEl.src.indexOf(s.url)>=0){audioEl.pause();audioEl.removeAttribute("src");}
+  renderMusicView();
+  renderAdminGrid();
+  updateDisplay();
+}
+function addSongEntry(url,defName){
+  var phId=el.muPhotoSel.value;
+  var ph=phId?photoById(phId):null;
+  if(!ph){el.muMsg.textContent="请先选择一张照片";return;}
+  if(ph.musicId){
+    var old=libById(ph.musicId);
+    if(old&&old.photoId===ph.id) delete old.photoId;
+  }
+  var s={id:"ml"+Date.now()+"_"+Math.random().toString(36).slice(2,6), name:(el.muNameInput.value.trim()||defName||"配乐"), url:url, photoId:ph.id, createdAt:new Date().toISOString()};
+  musicLib.push(s);
+  ph.musicId=s.id;
+  renderMusicView();
+  renderAdminGrid();
+  updateDisplay();
+  el.muMsg.textContent="已添加「"+s.name+"」，点击底部「保存更改」生效";
+}
+el.musicManageBtn.addEventListener("click",openMusicView);
+el.musicViewClose.addEventListener("click",closeMusicView);
+el.musicCancelBtn.addEventListener("click",closeMusicView);
+el.musicSaveBtn.addEventListener("click",function(){
+  saveManifest(function(ok){
+    if(ok){el.muMsg.textContent="已保存（含音乐库）";}
+    else{el.muMsg.textContent="保存失败，请确认已登录管理员账号";}
+  });
+});
+el.musicView.addEventListener("click",function(e){if(e.target===e.currentTarget)closeMusicView();});
+el.muUploadBtn.addEventListener("click",function(){el.muFileInput.click();});
+el.muFileInput.addEventListener("change",function(){
+  var fl=el.muFileInput.files&&el.muFileInput.files[0];
+  el.muFileInput.value="";
+  if(!fl)return;
+  if(!/\.(mp3|m4a|ogg|wav)$/i.test(fl.name)){el.muMsg.textContent="仅支持 mp3/m4a/ogg/wav 格式";return;}
+  if(fl.size>20*1024*1024){el.muMsg.textContent="音频文件不能超过 20MB";return;}
+  el.muMsg.textContent="上传中…";
+  uploadAudioToSupabase(fl,function(err,url){
+    if(err){el.muMsg.textContent="上传失败："+err;return;}
+    addSongEntry(url,fl.name.replace(/\.[^.]+$/,""));
+  });
+});
+el.muLinkBtn.addEventListener("click",function(){
+  var u=window.prompt("粘贴音频直链（仅支持 http/https 开头）");
+  if(u===null)return;
+  u=u.trim();
+  if(!/^https?:\/\//i.test(u)){alert("链接必须以 http:// 或 https:// 开头");return;}
+  var nm=decodeURIComponent(u.split("/").pop().split("?")[0]).replace(/\.[^.]+$/,"");
+  addSongEntry(u,nm||"外链配乐");
+});
 var audioEl = null;
 function musicEl(){
   if(!audioEl){
     audioEl=document.createElement("audio");
     audioEl.preload="metadata";
-    audioEl.addEventListener("play",function(){if(el.musicPlay)el.musicPlay.innerHTML="&#10073;&#10073;";});
-    audioEl.addEventListener("pause",function(){if(el.musicPlay)el.musicPlay.innerHTML="&#9654;";});
+    audioEl.addEventListener("play",function(){
+      if(el.musicPlay)el.musicPlay.innerHTML="&#10073;&#10073;";
+      if(el.fpPlay)el.fpPlay.innerHTML="&#10073;&#10073;";
+    });
+    audioEl.addEventListener("pause",function(){
+      if(el.musicPlay)el.musicPlay.innerHTML="&#9654;";
+      if(el.fpPlay)el.fpPlay.innerHTML="&#9654;";
+    });
     audioEl.addEventListener("timeupdate",function(){
       if(audioEl.duration&&isFinite(audioEl.duration)){
-        el.musicProgressFill.style.width=(audioEl.currentTime/audioEl.duration*100)+"%";
+        var pct=(audioEl.currentTime/audioEl.duration*100);
+        el.musicProgressFill.style.width=pct+"%";
         el.musicTime.textContent=fmtTime(audioEl.currentTime)+" / "+fmtTime(audioEl.duration);
+        if(el.fpProgressFill)el.fpProgressFill.style.width=pct+"%";
+        if(el.fpTime)el.fpTime.textContent=fmtTime(audioEl.currentTime)+" / "+fmtTime(audioEl.duration);
       }
     });
     audioEl.addEventListener("loadedmetadata",function(){
       el.musicTime.textContent="0:00 / "+fmtTime(audioEl.duration);
+      if(el.fpTime)el.fpTime.textContent="0:00 / "+fmtTime(audioEl.duration);
     });
     audioEl.addEventListener("ended",function(){audioEl.currentTime=0;audioEl.pause();});
     audioEl.addEventListener("error",function(){
       if(el.musicTime)el.musicTime.textContent="加载失败";
       if(el.musicPlay)el.musicPlay.innerHTML="&#9654;";
+      if(el.fpTime)el.fpTime.textContent="加载失败";
+      if(el.fpPlay)el.fpPlay.innerHTML="&#9654;";
     });
   }
   return audioEl;
@@ -1610,28 +1942,85 @@ function fmtTime(t){
   return Math.floor(t/60)+":"+String(t%60).padStart(2,"0");
 }
 function updateMusicBar(){
-  var m=view[ci];
-  if(!m||!m.music){
+  if(musicLocked){
+    if(el.musicBar)el.musicBar.style.display="none";
+    return;
+  }
+  var s=photoMusic(view[ci]);
+  if(!s){
     if(audioEl){audioEl.pause();audioEl.removeAttribute("src");}
     if(el.musicBar)el.musicBar.style.display="none";
     return;
   }
   el.musicBar.style.display="flex";
-  el.musicName.textContent=m.musicName||"配乐";
+  el.musicName.textContent=s.name||"配乐";
   var au=musicEl();
-  if(au.src!==m.music){
+  if(au.src!==s.url){
     au.pause();
-    au.src=m.music;
+    au.src=s.url;
     el.musicProgressFill.style.width="0%";
     el.musicTime.textContent="0:00";
   }
 }
 el.musicPlay.addEventListener("click",function(){
-  var m=view[ci]; if(!m||!m.music) return;
+  var s=photoMusic(view[ci]); if(!s) return;
   var au=musicEl();
   if(au.paused){ au.play().catch(function(){el.musicTime.textContent="播放失败";}); }
   else au.pause();
 });
+el.musicLock.addEventListener("click",function(){
+  var s=photoMusic(view[ci]);
+  if(!s){alert("当前照片没有配乐，无法锁定");return;}
+  lockSong(s.id);
+});
+function lockSong(id){
+  musicLocked=true; lockedSongId=id;
+  if(el.musicBar)el.musicBar.style.display="none";
+  renderFloatingPlayer();
+}
+function renderFloatingPlayer(){
+  var s=libById(lockedSongId);
+  if(!s){unlockSong();return;}
+  el.fpName.textContent=s.name||"配乐";
+  el.fpSelect.innerHTML="";
+  musicLib.forEach(function(x){
+    var o=document.createElement("option");
+    o.value=x.id; o.textContent=x.name||"配乐";
+    if(x.id===lockedSongId) o.selected=true;
+    el.fpSelect.appendChild(o);
+  });
+  var au=musicEl();
+  if(au.src!==s.url){
+    au.pause();
+    au.src=s.url;
+    el.musicProgressFill.style.width="0%";
+    el.musicTime.textContent="0:00";
+  }
+  el.floatingPlayer.classList.add("show");
+}
+function unlockSong(){
+  musicLocked=false; lockedSongId=null;
+  el.floatingPlayer.classList.remove("show");
+  updateDisplay();
+}
+el.fpPlay.addEventListener("click",function(){
+  var s=libById(lockedSongId);
+  if(!s)return;
+  var au=musicEl();
+  if(au.paused){ au.play().catch(function(){if(el.fpTime)el.fpTime.textContent="播放失败";}); }
+  else au.pause();
+});
+el.fpProgress.addEventListener("click",function(e){
+  var au=musicEl();
+  if(!au.duration||!isFinite(au.duration)) return;
+  var r=el.fpProgress.getBoundingClientRect();
+  au.currentTime=(e.clientX-r.left)/r.width*au.duration;
+});
+el.fpSelect.addEventListener("change",function(){
+  if(!el.fpSelect.value)return;
+  lockSong(el.fpSelect.value);
+});
+el.fpUnlock.addEventListener("click",unlockSong);
 el.musicProgress.addEventListener("click",function(e){
   var au=musicEl();
   if(!au.duration||!isFinite(au.duration)) return;
