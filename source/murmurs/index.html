@@ -155,7 +155,75 @@ function xhr(method,url,headers,body,cb){
 }
 function jsonHeaders(extra){var h={'apikey':SUPABASE_KEY,'Content-Type':'application/json'};if(extra)Object.keys(extra).forEach(function(k){h[k]=extra[k];});return h;}
 
+function isAuthed(){return !!state.token;}
+function showEmpty(v){el.empty.classList.toggle('hidden',!v);}
+function showErr(){el.errBox.classList.remove('hidden');}
+
+var io=null;
+function makeObserver(){
+  if(!('IntersectionObserver' in window))return null;
+  return new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      if(!en.isIntersecting)return;
+      var t=en.target;
+      t.style.transitionDelay=Math.min((parseInt(t.dataset.i||'0',10))*60,480)+'ms';
+      t.classList.add('in');
+      setTimeout(function(){t.style.transitionDelay='';},700);
+      io.unobserve(t);
+    });
+  },{rootMargin:'0px 0px -8% 0px',threshold:.05});
+}
+function revealCards(){
+  var cards=el.wall.querySelectorAll('.card.pre');
+  Array.prototype.forEach.call(cards,function(c,i){
+    c.dataset.i=String(i);
+    if(io)io.observe(c);
+    else{setTimeout(function(){c.classList.add('in');},Math.min(i*60,480));}
+  });
+}
+function cardHtml(m,fresh){
+  var img='';
+  if(m.image_url&&IMG_RE.test(m.image_url))img='<img class="mz-img" src="'+he(m.image_url)+'" alt="" loading="lazy">';
+  var del=isAuthed()?'<button class="mz-del" data-id="'+he(String(m.id))+'" data-img="'+he(m.image_url||'')+'" title="删除">&#10005;</button>':'';
+  var cls='card'+(fresh?' in pop-in':' pre');
+  return '<article class="'+cls+'">'+img+'<div class="mz-content">'+he(m.content)+'</div>'+
+    '<div class="mz-meta"><span class="mz-time">'+fmtTime(m.created_at)+'</span>'+del+'</div></article>';
+}
+function renderBatch(rows,mode){
+  var htmlStr=rows.map(function(m){return cardHtml(m,false);}).join('');
+  if(mode==='reset'){el.wall.innerHTML=htmlStr;if(rows.length)revealCards();}
+  else{el.wall.insertAdjacentHTML('beforeend',htmlStr);if(rows.length)revealCards();}
+  el.count.textContent=state.list.length?('共 '+state.list.length+' 条'):'';
+  showEmpty(state.list.length===0);
+}
+function renderOne(m){
+  el.wall.insertAdjacentHTML('afterbegin',cardHtml(m,true));
+  el.count.textContent='共 '+state.list.length+' 条';
+  showEmpty(false);
+}
+function renderAll(){renderBatch(state.list,'reset');}
+function loadMurmurs(reset){
+  if(state.loading)return;
+  state.loading=true;
+  if(reset){state.offset=0;state.done=false;}
+  el.errBox.classList.add('hidden');
+  var url=DB_URL+'/murmurs?select=id,content,image_url,created_at&order=created_at.desc&limit='+PAGE_SIZE+'&offset='+state.offset;
+  xhr('GET',url,jsonHeaders(),null,function(err,st,data){
+    state.loading=false;
+    if(err){showErr();if(reset){el.wall.innerHTML='';showEmpty(false);el.loadMore.classList.add('hidden');}return;}
+    var fresh=Array.isArray(data)?data:[];
+    if(reset)state.list=fresh.slice();
+    else state.list=state.list.concat(fresh);
+    state.offset+=fresh.length;
+    state.done=fresh.length<PAGE_SIZE;
+    renderBatch(fresh,reset?'reset':'append');
+    el.loadMore.classList.toggle('hidden',state.done);
+  });
+}
+
 function bindEvents(){
+  el.loadMore.addEventListener('click',function(){loadMurmurs(false);});
+  el.retryBtn.addEventListener('click',function(){loadMurmurs(true);});
   el.loginCancel.addEventListener('click',closeOverlay.bind(null,el.loginOverlay));
   el.confirmCancel.addEventListener('click',closeOverlay.bind(null,el.confirmOverlay));
   [el.loginOverlay,el.composerOverlay,el.confirmOverlay].forEach(function(ov){
@@ -167,9 +235,9 @@ function bindEvents(){
 }
 function closeOverlay(ov){ov.classList.remove('open');}
 
-function init(){bindEvents();}
+function init(){io=makeObserver();bindEvents();loadMurmurs(true);}
 
-window.__MZ={state:state,he:he,fmtTime:fmtTime,xhr:xhr,jsonHeaders:jsonHeaders,init:init};
+window.__MZ={state:state,he:he,fmtTime:fmtTime,xhr:xhr,jsonHeaders:jsonHeaders,init:init,loadMurmurs:loadMurmurs,renderBatch:renderBatch,renderOne:renderOne,renderAll:renderAll,cardHtml:cardHtml,isAuthed:isAuthed,showEmpty:showEmpty,showErr:showErr};
 init();
 })();
 </script>
