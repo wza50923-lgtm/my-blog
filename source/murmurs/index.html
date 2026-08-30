@@ -134,7 +134,7 @@ var BUCKET_NAME='photos';
 var PUBLIC_PREFIX=STORAGE_URL+'/object/public/'+BUCKET_NAME+'/';
 var LS_KEY='murmur_auth';
 var PAGE_SIZE=100;
-var IMG_RE=/^https:\/\/[^\s]+\/object\/public\/photos\/[A-Za-z0-9._-]+$/;
+var IMG_RE=new RegExp('^'+PUBLIC_PREFIX.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'[A-Za-z0-9._-]+$');
 
 var state={list:[],offset:0,done:false,loading:false,token:null,refreshTok:null,expiresAt:0,pendingImg:null,pendingPreview:null,deleteTarget:null};
 

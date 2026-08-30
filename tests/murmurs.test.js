@@ -44,19 +44,21 @@ function rows(n, startId) {
   }));
 }
 
-test('渲染：3 条数据 → 3 张卡片 + 转义 + 配图守卫 + 计数', () => {
+test('渲染：4 条数据 → 4 张卡片 + 转义 + 配图守卫 + 计数', () => {
   const { doc, MZ } = setup(() => ({ status: 200, body: JSON.stringify([
     { id: 1, content: '<img src=x onerror=alert(1)>注入', image_url: null, created_at: '2026-08-30T10:00:00Z' },
     { id: 2, content: '有图', image_url: 'https://dxfxkflqcjifrjqvgzeh.supabase.co/storage/v1/object/public/photos/murmur_1_a.jpg', created_at: '2026-08-30T09:00:00Z' },
-    { id: 3, content: '坏图', image_url: 'javascript:alert(1)', created_at: '2026-08-30T08:00:00Z' }
+    { id: 3, content: '坏图', image_url: 'javascript:alert(1)', created_at: '2026-08-30T08:00:00Z' },
+    { id: 4, content: '外域图', image_url: 'https://evil.com/object/public/photos/x.jpg', created_at: '2026-08-30T07:00:00Z' }
   ]) }));
-  assert.strictEqual(doc().querySelectorAll('#mzWall .card').length, 3);
+  assert.strictEqual(doc().querySelectorAll('#mzWall .card').length, 4);
   const c1 = doc().querySelectorAll('#mzWall .card')[0];
   assert.ok(c1.querySelector('.mz-content').innerHTML.includes('&lt;img'), '内容必须被转义');
   assert.strictEqual(c1.querySelector('img.mz-img'), null);
   assert.ok(doc().querySelectorAll('#mzWall .card')[1].querySelector('img.mz-img'), '合法桶地址才渲染 <img>');
   assert.strictEqual(doc().querySelectorAll('#mzWall .card')[2].querySelector('img.mz-img'), null, '非法 URL 不渲染');
-  assert.ok(doc().getElementById('mzCount').textContent.includes('3'));
+  assert.strictEqual(doc().querySelectorAll('#mzWall .card')[3].querySelector('img.mz-img'), null, '非本桶域名不渲染');
+  assert.ok(doc().getElementById('mzCount').textContent.includes('4'));
   assert.ok(MZ().fmtTime('2026-08-30T10:00:00Z').length >= 16, '时间格式化非空');
 });
 
