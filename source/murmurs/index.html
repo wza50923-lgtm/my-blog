@@ -221,7 +221,55 @@ function loadMurmurs(reset){
   });
 }
 
+function saveSession(d){
+  state.token=d.access_token;state.refreshTok=d.refresh_token;
+  state.expiresAt=(d.expires_at?d.expires_at*1000:Date.now()+(d.expires_in||3600)*1000)-60000;
+  try{localStorage.setItem(LS_KEY,JSON.stringify({a:state.token,r:state.refreshTok,e:state.expiresAt}));}catch(e){}
+}
+function clearSession(){state.token=null;state.refreshTok=null;state.expiresAt=0;try{localStorage.removeItem(LS_KEY);}catch(e){}}
+function openOverlay(ov){ov.classList.add('open');}
+function openLogin(){openOverlay(el.loginOverlay);}
+function on401(){clearSession();updateAuthUi();renderAll();openLogin();}
+function authHeaders(){return isAuthed()?{Authorization:'Bearer '+state.token}:null;}
+function refreshSession(cb){
+  if(!state.refreshTok){cb(false);return;}
+  xhr('POST',AUTH_URL+'/token?grant_type=refresh_token',jsonHeaders(),JSON.stringify({refresh_token:state.refreshTok}),function(err,st,data){
+    if(err){cb(false);return;}
+    saveSession(data);cb(true);
+  });
+}
+function login(email,pwd,cb){
+  if(!email||!pwd){cb(false);el.loginErr.textContent='请输入账号和密码';return;}
+  xhr('POST',AUTH_URL+'/token?grant_type=password',jsonHeaders(),JSON.stringify({email:email,password:pwd}),function(err,st,data){
+    if(err){cb(false);el.loginErr.textContent='账号或密码错误';var p=el.loginOverlay.querySelector('.panel');
+      p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake');return;}
+    el.loginErr.textContent='';
+    saveSession(data);updateAuthUi();closeOverlay(el.loginOverlay);renderAll();cb(true);
+  });
+}
+function logout(){
+  if(state.token)xhr('POST',AUTH_URL+'/logout',jsonHeaders({Authorization:'Bearer '+state.token}),null,function(){});
+  clearSession();updateAuthUi();renderAll();
+}
+function restoreSession(){
+  var raw=null;try{raw=localStorage.getItem(LS_KEY);}catch(e){}
+  if(!raw){updateAuthUi();return;}
+  try{var s=JSON.parse(raw);state.token=s.a||null;state.refreshTok=s.r||null;state.expiresAt=s.e||0;}
+  catch(e){clearSession();updateAuthUi();return;}
+  if(state.token&&Date.now()<state.expiresAt){updateAuthUi();return;}
+  if(state.refreshTok){refreshSession(function(ok){if(!ok)clearSession();updateAuthUi();});}
+  else clearSession();
+}
+function updateAuthUi(){
+  el.userChip.classList.toggle('hidden',!isAuthed());
+  if(!isAuthed())closeOverlay(el.composerOverlay);
+}
+
 function bindEvents(){
+  el.fab.addEventListener('click',function(){isAuthed()?openOverlay(el.composerOverlay):openLogin();});
+  el.loginOk.addEventListener('click',function(){login(el.email.value.trim(),el.pwd.value,function(){});});
+  el.pwd.addEventListener('keydown',function(e){if(e.key==='Enter')el.loginOk.click();});
+  el.logoutBtn.addEventListener('click',logout);
   el.loadMore.addEventListener('click',function(){loadMurmurs(false);});
   el.retryBtn.addEventListener('click',function(){loadMurmurs(true);});
   el.loginCancel.addEventListener('click',closeOverlay.bind(null,el.loginOverlay));
@@ -235,9 +283,9 @@ function bindEvents(){
 }
 function closeOverlay(ov){ov.classList.remove('open');}
 
-function init(){io=makeObserver();bindEvents();loadMurmurs(true);}
+function init(){io=makeObserver();restoreSession();bindEvents();loadMurmurs(true);}
 
-window.__MZ={state:state,he:he,fmtTime:fmtTime,xhr:xhr,jsonHeaders:jsonHeaders,init:init,loadMurmurs:loadMurmurs,renderBatch:renderBatch,renderOne:renderOne,renderAll:renderAll,cardHtml:cardHtml,isAuthed:isAuthed,showEmpty:showEmpty,showErr:showErr};
+window.__MZ={state:state,he:he,fmtTime:fmtTime,xhr:xhr,jsonHeaders:jsonHeaders,init:init,loadMurmurs:loadMurmurs,renderBatch:renderBatch,renderOne:renderOne,renderAll:renderAll,cardHtml:cardHtml,isAuthed:isAuthed,showEmpty:showEmpty,showErr:showErr,login:login,logout:logout,restoreSession:restoreSession,refreshSession:refreshSession,saveSession:saveSession,clearSession:clearSession,authHeaders:authHeaders,on401:on401,updateAuthUi:updateAuthUi,openLogin:openLogin,openOverlay:openOverlay};
 init();
 })();
 </script>

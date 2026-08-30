@@ -92,3 +92,56 @@ test('加载更多：offset 翻页 + 完成后隐藏', () => {
   const urls = calls.filter(c => c.method === 'GET').map(c => c.url);
   assert.ok(urls.some(u => u.includes('offset=100')), '第二次请求 offset=100');
 });
+
+const AUTH_OK={status:200,body:JSON.stringify({access_token:'AT1',refresh_token:'RT1',expires_in:604800,user:{email:'wza50923@gmail.com'}})};
+
+test('登录：成功保存会话（7 天）+ UI 切换；失败提示且不保存', () => {
+  const ctx = setup((m,u,b) => {
+    if(m==='POST'&&u.includes('grant_type=password')){
+      const p=JSON.parse(b);
+      return p.password==='right'?AUTH_OK:{status:400,body:'{"error":"invalid_grant"}'};
+    }
+    return {status:200,body:'[]'};
+  });
+  const d=ctx.doc();
+  d.getElementById('mzFab').click();                       // 未登录 → 打开登录层
+  assert.ok(d.getElementById('mzLoginOverlay').classList.contains('open'));
+  d.getElementById('mzEmail').value='wza50923@gmail.com';
+  d.getElementById('mzPwd').value='wrong';
+  d.getElementById('mzLoginOk').click();
+  assert.ok(d.getElementById('mzLoginErr').textContent.length>0,'错误提示');
+  assert.strictEqual(ctx.MZ().state.token,null);
+  d.getElementById('mzPwd').value='right';
+  d.getElementById('mzLoginOk').click();
+  assert.strictEqual(ctx.MZ().state.token,'AT1');
+  const s=JSON.parse(ctx.w.localStorage.getItem('murmur_auth'));
+  assert.strictEqual(s.a,'AT1');assert.ok(s.e-Date.now()>6*24*3600*1000,'过期时间≥6天');
+  assert.ok(!d.getElementById('mzUserChip').classList.contains('hidden'),'显示已登录');
+});
+
+test('restoreSession：过期会话自动走 refresh 续期', () => {
+  let refreshed=false;
+  const ctx = setup((m,u)=>{
+    if(m==='POST'&&u.includes('grant_type=refresh_token')){refreshed=true;return AUTH_OK;}
+    return {status:200,body:'[]'};
+  },(w)=>w.localStorage.setItem('murmur_auth',JSON.stringify({a:'OLD',r:'RTO',e:Date.now()-1000})));
+  assert.ok(refreshed,'触发 refresh');
+  assert.strictEqual(ctx.MZ().state.token,'AT1');
+});
+
+test('restoreSession：refresh 失败 → 清会话', () => {
+  const ctx = setup((m,u)=>{
+    if(m==='POST'&&u.includes('grant_type=refresh_token'))return {status:400,body:'{"error":"invalid_grant"}'};
+    return {status:200,body:'[]'};
+  },(w)=>w.localStorage.setItem('murmur_auth',JSON.stringify({a:'OLD',r:'RTO',e:Date.now()-1000})));
+  assert.strictEqual(ctx.MZ().state.token,null);
+  assert.strictEqual(ctx.w.localStorage.getItem('murmur_auth'),null);
+});
+
+test('写操作 401 → 清会话并弹登录', () => {
+  const ctx = setup(()=>({status:200,body:'[]'}));
+  ctx.MZ().state.token='X';
+  ctx.MZ().on401();
+  assert.strictEqual(ctx.MZ().state.token,null);
+  assert.ok(ctx.doc().getElementById('mzLoginOverlay').classList.contains('open'));
+});
