@@ -12,6 +12,7 @@ menu:
   home: / || fa-solid fa-home
   archives: /archives || fa-solid fa-box-archive
   photos: /gallery || fa-solid fa-image
+  碎碎念: /murmurs || zzn-icon
 
 # 首页首屏背景图（需 enable: true 才会显示）
 first_screen:
@@ -25,6 +26,12 @@ inject:
   css:
     - /css/custom.css
 
+# ===================================================================
+# 评论系统配置
+# ===================================================================
+# ===================================================================
+# Keep 主题评论配置
+# ===================================================================
 comment:
   enable: true
   use: twikoo            # ⚠️ 关键点 1：Keep 主题用的是 `use`，不是 `type`！
