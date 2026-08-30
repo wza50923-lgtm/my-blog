@@ -664,7 +664,9 @@ test('发布：POST 带登录头 → 新卡片置顶弹入 + 列表更新', () =
   const ctx=loginFor(setup((m,u,b)=>{
     if(m==='POST'&&u.includes('grant_type=password'))return AUTH_OK;
     if(m==='POST'&&u.endsWith('/rest/v1/murmurs')){
-      assert.ok(b&&JSON.parse(b).content==='第一条', 'POST body 正确');
+      const cur=ctx.calls[ctx.calls.length-1];
+      assert.ok(cur.headers.Authorization,'POST 带登录头');
+      assert.strictEqual(JSON.parse(b).content,'第一条','POST body 正确');
       return {status:201,body:JSON.stringify([{id:9,content:'第一条',image_url:null,created_at:'2026-08-30T12:00:00Z'}])};
     }
     return {status:200,body:'[]'};

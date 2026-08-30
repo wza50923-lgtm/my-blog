@@ -265,11 +265,125 @@ function updateAuthUi(){
   if(!isAuthed())closeOverlay(el.composerOverlay);
 }
 
+function compressImage(file,cb){
+  var MAX_DIM=1920,QUALITY=0.85;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var w=img.width,h=img.height;
+      if(w>MAX_DIM||h>MAX_DIM){var r=Math.min(MAX_DIM/w,MAX_DIM/h);w*=r;h*=r;}
+      var c=document.createElement('canvas');c.width=Math.round(w);c.height=Math.round(h);
+      var ctx=c.getContext('2d');ctx.drawImage(img,0,0,c.width,c.height);
+      (function tryQ(q){
+        c.toBlob(function(blob){
+          if(!blob){cb('图片压缩失败');return;}
+          if(blob.size>2*1024*1024&&q>0.4){tryQ(q-0.1);return;}
+          var name=(file.name||'murmur').replace(/\.[^.]+$/,'')+'.jpg';
+          cb(null,new File([blob],name,{type:'image/jpeg'}));
+        },'image/jpeg',q);
+      })(QUALITY);
+    };
+    img.onerror=function(){cb('图片读取失败');};
+    img.src=e.target.result;
+  };
+  reader.onerror=function(){cb('图片读取失败');};
+  reader.readAsDataURL(file);
+}
+function uploadImage(file,cb){
+  if(!isAuthed()){cb('请先登录');return;}
+  var fn='murmur_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.jpg';
+  xhr('POST',STORAGE_URL+'/object/'+BUCKET_NAME+'/'+fn,
+    {Authorization:'Bearer '+state.token,'Content-Type':'image/jpeg','x-upsert':'true'},
+    file,function(err){
+      if(err){cb('图片上传失败('+(err.status||'网络错误')+')');return;}
+      cb(null,PUBLIC_PREFIX+fn);
+    });
+}
+function publish(content,imageUrl,cb){
+  content=String(content||'').trim();
+  if(!content){cb('写点什么再发布吧');return;}
+  if(content.length>1000){cb('最多 1000 字');return;}
+  if(!isAuthed()){cb('请先登录');return;}
+  var body={content:content};if(imageUrl)body.image_url=imageUrl;
+  xhr('POST',DB_URL+'/murmurs',jsonHeaders({Authorization:'Bearer '+state.token,Prefer:'return=representation'}),JSON.stringify(body),
+    function(err,st,data){
+      if(err){if(err.status===401)on401();cb('发布失败('+(err.status||'网络错误')+')');return;}
+      var row=Array.isArray(data)?data[0]:data;
+      cb(null,row);
+    });
+}
+function deleteMurmur(id,imageUrl,cb){
+  if(!isAuthed()){cb('请先登录');return;}
+  xhr('DELETE',DB_URL+'/murmurs?id=eq.'+encodeURIComponent(id),jsonHeaders({Authorization:'Bearer '+state.token}),null,function(err){
+    if(err){if(err.status===401)on401();cb('删除失败('+(err.status||'网络错误')+')');return;}
+    if(imageUrl&&imageUrl.indexOf(PUBLIC_PREFIX)===0){
+      var fn=imageUrl.substring(PUBLIC_PREFIX.length).split('?')[0];
+      if(fn)xhr('DELETE',STORAGE_URL+'/object/'+BUCKET_NAME+'/'+fn,{Authorization:'Bearer '+state.token},null,function(){});
+    }
+    cb(null);
+  });
+}
+function resetComposer(){
+  el.content.value='';el.charCount.textContent='0/1000';el.compErr.textContent='';
+  state.pendingImg=null;state.pendingPreview=null;el.imgPreview.classList.add('hidden');
+  el.publishBtn.disabled=false;
+}
+
 function bindEvents(){
   el.fab.addEventListener('click',function(){isAuthed()?openOverlay(el.composerOverlay):openLogin();});
   el.loginOk.addEventListener('click',function(){login(el.email.value.trim(),el.pwd.value,function(){});});
   el.pwd.addEventListener('keydown',function(e){if(e.key==='Enter')el.loginOk.click();});
   el.logoutBtn.addEventListener('click',logout);
+  el.publishBtn.addEventListener('click',function(){
+    el.compErr.textContent='';
+    var text=el.content.value;
+    if(!text.trim()){el.compErr.textContent='写点什么再发布吧';return;}
+    el.publishBtn.disabled=true;
+    var done=function(err){el.publishBtn.disabled=false;if(err){el.compErr.textContent=err;return;}resetComposer();closeOverlay(el.composerOverlay);};
+    if(state.pendingImg){
+      uploadImage(state.pendingImg,function(err,url){if(err){done(err);return;}publish(text,url,function(err2,row){if(err2){done(err2);return;}state.list.unshift(row);renderOne(row);done(null);});});
+    }else{
+      publish(text,null,function(err2,row){if(err2){done(err2);return;}state.list.unshift(row);renderOne(row);done(null);});
+    }
+  });
+  el.content.addEventListener('input',function(){el.charCount.textContent=el.content.value.length+'/1000';});
+  el.pickBtn.addEventListener('click',function(){el.fileInput.click();});
+  el.fileInput.addEventListener('change',function(){
+    var f=el.fileInput.files&&el.fileInput.files[0];
+    el.fileInput.value='';
+    if(!f)return;
+    compressImage(f,function(err,nf){
+      if(err){el.compErr.textContent=err;return;}
+      state.pendingImg=nf;
+      var rd=new FileReader();
+      rd.onload=function(e){state.pendingPreview=e.target.result;el.imgPrev.src=state.pendingPreview;el.imgPreview.classList.remove('hidden');};
+      rd.readAsDataURL(nf);
+    });
+  });
+  el.imgDel.addEventListener('click',function(){state.pendingImg=null;state.pendingPreview=null;el.imgPreview.classList.add('hidden');});
+  el.wall.addEventListener('click',function(e){
+    var b=e.target.closest('.mz-del');if(!b)return;
+    state.deleteTarget={id:b.dataset.id,img:b.dataset.img};
+    openOverlay(el.confirmOverlay);
+  });
+  el.confirmOk.addEventListener('click',function(){
+    var t=state.deleteTarget;if(!t)return;
+    el.confirmOk.disabled=true;
+    deleteMurmur(t.id,t.img,function(err){
+      el.confirmOk.disabled=false;closeOverlay(el.confirmOverlay);
+      if(err)return;
+      var idx=-1;
+      for(var i=0;i<state.list.length;i++){if(String(state.list[i].id)===String(t.id)){idx=i;break;}}
+      if(idx>=0)state.list.splice(idx,1);
+      var cards=el.wall.querySelectorAll('.card');
+      Array.prototype.forEach.call(cards,function(c){
+        var btn=c.querySelector('.mz-del');
+        if(btn&&btn.dataset.id===String(t.id)){c.classList.add('fade-out');setTimeout(function(){c.remove();el.count.textContent=state.list.length?('共 '+state.list.length+' 条'):'';showEmpty(state.list.length===0);},320);}
+      });
+      state.deleteTarget=null;
+    });
+  });
   el.loadMore.addEventListener('click',function(){loadMurmurs(false);});
   el.retryBtn.addEventListener('click',function(){loadMurmurs(true);});
   el.loginCancel.addEventListener('click',closeOverlay.bind(null,el.loginOverlay));
@@ -285,7 +399,7 @@ function closeOverlay(ov){ov.classList.remove('open');}
 
 function init(){io=makeObserver();restoreSession();bindEvents();loadMurmurs(true);}
 
-window.__MZ={state:state,he:he,fmtTime:fmtTime,xhr:xhr,jsonHeaders:jsonHeaders,init:init,loadMurmurs:loadMurmurs,renderBatch:renderBatch,renderOne:renderOne,renderAll:renderAll,cardHtml:cardHtml,isAuthed:isAuthed,showEmpty:showEmpty,showErr:showErr,login:login,logout:logout,restoreSession:restoreSession,refreshSession:refreshSession,saveSession:saveSession,clearSession:clearSession,authHeaders:authHeaders,on401:on401,updateAuthUi:updateAuthUi,openLogin:openLogin,openOverlay:openOverlay};
+window.__MZ={state:state,he:he,fmtTime:fmtTime,xhr:xhr,jsonHeaders:jsonHeaders,init:init,loadMurmurs:loadMurmurs,renderBatch:renderBatch,renderOne:renderOne,renderAll:renderAll,cardHtml:cardHtml,isAuthed:isAuthed,showEmpty:showEmpty,showErr:showErr,login:login,logout:logout,restoreSession:restoreSession,refreshSession:refreshSession,saveSession:saveSession,clearSession:clearSession,authHeaders:authHeaders,on401:on401,updateAuthUi:updateAuthUi,openLogin:openLogin,openOverlay:openOverlay,publish:publish,deleteMurmur:deleteMurmur,compressImage:compressImage,uploadImage:uploadImage,resetComposer:resetComposer};
 init();
 })();
 </script>

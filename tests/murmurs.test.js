@@ -145,3 +145,63 @@ test('写操作 401 → 清会话并弹登录', () => {
   assert.strictEqual(ctx.MZ().state.token,null);
   assert.ok(ctx.doc().getElementById('mzLoginOverlay').classList.contains('open'));
 });
+
+function loginFor(ctx){ // 通过 UI 登录（密码=right），返回 ctx
+  const d=ctx.doc();
+  d.getElementById('mzFab').click();
+  d.getElementById('mzEmail').value='wza50923@gmail.com';
+  d.getElementById('mzPwd').value='right';
+  d.getElementById('mzLoginOk').click();
+  return ctx;
+}
+
+test('发布：POST 带登录头 → 新卡片置顶弹入 + 列表更新', () => {
+  const ctx=loginFor(setup((m,u,b)=>{
+    if(m==='POST'&&u.includes('grant_type=password'))return AUTH_OK;
+    if(m==='POST'&&u.endsWith('/rest/v1/murmurs')){
+      const cur=ctx.calls[ctx.calls.length-1];
+      assert.ok(cur.headers.Authorization,'POST 带登录头');
+      assert.strictEqual(JSON.parse(b).content,'第一条','POST body 正确');
+      return {status:201,body:JSON.stringify([{id:9,content:'第一条',image_url:null,created_at:'2026-08-30T12:00:00Z'}])};
+    }
+    return {status:200,body:'[]'};
+  }));
+  const d=ctx.doc();
+  d.getElementById('mzFab').click();                       // 已登录 → 打开发布层
+  assert.ok(d.getElementById('mzComposerOverlay').classList.contains('open'));
+  d.getElementById('mzContent').value='第一条';
+  d.getElementById('mzPublishBtn').click();
+  assert.strictEqual(d.querySelector('#mzWall .card .mz-content').textContent,'第一条');
+  assert.strictEqual(ctx.MZ().state.list[0].id,9);
+});
+
+test('发布校验：空内容不发请求', () => {
+  const ctx=loginFor(setup((m,u)=>{
+    if(m==='POST'&&u.includes('grant_type=password'))return AUTH_OK;
+    return {status:200,body:'[]'};
+  }));
+  const n=ctx.calls.length;
+  ctx.doc().getElementById('mzContent').value='   ';
+  ctx.doc().getElementById('mzPublishBtn').click();
+  assert.strictEqual(ctx.calls.length,n,'没有新增请求');
+  assert.ok(ctx.doc().getElementById('mzCompErr').textContent.length>0);
+});
+
+test('删除：确认后 DELETE + 桶内图片同步删除', () => {
+  const img='https://dxfxkflqcjifrjqvgzeh.supabase.co/storage/v1/object/public/photos/murmur_9_x.jpg';
+  const ctx=loginFor(setup((m,u)=>{
+    if(m==='POST'&&u.includes('grant_type=password'))return AUTH_OK;
+    if(m==='GET'&&u.includes('/rest/v1/murmurs'))return {status:200,body:JSON.stringify([{id:9,content:'待删',image_url:img,created_at:'2026-08-30T12:00:00Z'}])};
+    if(m==='DELETE'&&u.includes('/rest/v1/murmurs?id=eq.9'))return {status:204,body:''};
+    if(m==='DELETE'&&u.includes('/storage/v1/object/photos/murmur_9_x.jpg'))return {status:200,body:''};
+    return {status:200,body:'[]'};
+  }));
+  const d=ctx.doc();
+  d.querySelector('.mz-del').click();
+  assert.ok(d.getElementById('mzConfirmOverlay').classList.contains('open'));
+  d.getElementById('mzConfirmOk').click();
+  assert.strictEqual(ctx.MZ().state.list.length,0);
+  const dels=ctx.calls.filter(c=>c.method==='DELETE').map(c=>c.url);
+  assert.ok(dels.some(u=>u.includes('murmurs?id=eq.9')));
+  assert.ok(dels.some(u=>u.includes('object/photos/murmur_9_x.jpg')),'配图文件同步删除');
+});
