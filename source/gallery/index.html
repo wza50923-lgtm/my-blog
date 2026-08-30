@@ -733,7 +733,8 @@ function listBucketFiles(cb){
         var arr=JSON.parse(xhr.responseText);
         var names=[];
         (Array.isArray(arr)?arr:[]).forEach(function(f){
-          if(f&&f.name&&/\.(jpe?g|png|webp|gif)$/i.test(f.name)) names.push(f.name);
+          // murmur_ 前缀是碎碎念页配图，与相册共用 photos 桶但不并入相册
+          if(f&&f.name&&/\.(jpe?g|png|webp|gif)$/i.test(f.name)&&!/^murmur_/.test(f.name)) names.push(f.name);
         });
         cb(null,names); return;
       }catch(e){}
