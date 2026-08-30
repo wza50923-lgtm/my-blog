@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="index,follow">
+<title>碎碎念</title>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:linear-gradient(180deg,#f7f8fa 0%,#eef1f5 100%);color:#2b3440;min-height:100vh}
+.hidden{display:none!important}
+.wrap{max-width:1080px;margin:0 auto;padding:48px 20px 120px}
+.mz-header{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.mz-header h1{font-size:28px;font-weight:700;color:#1d2733;letter-spacing:1px}
+.mz-count{font-size:13px;color:#8a94a3}
+.user-chip{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:#5b6b7b;background:#fff;border:1px solid #e3e8ef;border-radius:16px;padding:4px 6px 4px 12px;box-shadow:0 2px 8px rgba(31,45,61,.05)}
+.user-chip button{border:none;background:#eef4ff;color:#0066cc;font-size:12px;padding:4px 10px;border-radius:12px;cursor:pointer;transition:all .25s;font-family:inherit}
+.user-chip button:hover{background:#dfeaff}
+.wall{columns:3;column-gap:16px}
+.card{break-inside:avoid;margin:0 0 16px;background:#fff;border:1px solid #e9edf3;border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(31,45,61,.05);opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s cubic-bezier(.22,.61,.36,1),box-shadow .25s ease}
+.card.in{opacity:1;transform:none}
+.card.in:hover{box-shadow:0 10px 28px rgba(31,45,61,.1);transform:translateY(-4px)}
+.card img.mz-img{width:100%;border-radius:10px;margin:0 0 10px;display:block;transition:transform .3s ease}
+.card.in:hover img.mz-img{transform:scale(1.015)}
+.mz-content{font-size:15px;line-height:1.75;white-space:pre-wrap;word-break:break-word;color:#2b3440}
+.mz-meta{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.mz-time{font-size:12px;color:#9aa4b2}
+.mz-del{border:none;background:transparent;color:#c3ccd8;cursor:pointer;font-size:15px;line-height:1;padding:2px 6px;border-radius:6px;transition:all .25s;visibility:hidden}
+.card.in:hover .mz-del{visibility:visible}
+.mz-del:hover{color:#e5484d;background:#fdecec}
+.empty{text-align:center;color:#9aa4b2;font-size:14px;padding:60px 0}
+.err{text-align:center;color:#e5484d;font-size:14px;padding:40px 0}
+.err button{margin-left:8px;border:1px solid #f1c1c3;background:#fff;color:#e5484d;border-radius:8px;padding:4px 14px;cursor:pointer;font-size:13px;font-family:inherit}
+.load-more{display:block;margin:8px auto 0;border:1px solid #dfe5ec;background:#fff;color:#5b6b7b;border-radius:20px;padding:8px 28px;font-size:13px;cursor:pointer;transition:all .25s;font-family:inherit}
+.load-more:hover{color:#0066cc;border-color:#bcd7f7;background:#f5faff}
+.fab{position:fixed;right:28px;bottom:28px;z-index:60;height:52px;padding:0 24px;border:none;border-radius:26px;background:linear-gradient(135deg,#0066cc,#3d8bff);color:#fff;font-size:15px;letter-spacing:2px;cursor:pointer;box-shadow:0 8px 24px rgba(0,102,204,.35);transition:transform .25s,box-shadow .25s;font-family:inherit}
+.fab:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,102,204,.42)}
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(23,32,43,.45);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s}
+.overlay.open{opacity:1;visibility:visible}
+.panel{width:min(420px,92vw);background:#fff;border-radius:16px;padding:26px 26px 22px;box-shadow:0 18px 50px rgba(15,25,35,.25);transform:translateY(18px) scale(.96);transition:transform .35s cubic-bezier(.22,.61,.36,1)}
+.overlay.open .panel{transform:none}
+.panel h2{font-size:17px;font-weight:600;color:#1d2733;margin-bottom:18px}
+.panel input,.panel textarea{width:100%;border:1px solid #e3e8ef;border-radius:10px;padding:10px 14px;font-size:14px;color:#2b3440;outline:none;font-family:inherit;transition:border-color .25s;background:#fbfcfe}
+.panel input:focus,.panel textarea:focus{border-color:#7db4f5;background:#fff}
+.panel input+input{margin-top:10px}
+.panel textarea{min-height:110px;resize:vertical;margin-bottom:10px;line-height:1.7}
+.form-err{color:#e5484d;font-size:12px;min-height:16px;margin-bottom:8px}
+.panel-actions{display:flex;gap:10px;justify-content:flex-end}
+.panel-actions button{padding:9px 22px;border-radius:10px;font-size:14px;cursor:pointer;transition:all .25s;border:1px solid transparent;font-family:inherit}
+.btn-ghost{background:#f2f5f8;color:#5b6b7b}
+.btn-ghost:hover{background:#e8edf3}
+.btn-primary{background:#0066cc;color:#fff}
+.btn-primary:hover{background:#0055ad}
+.btn-primary:disabled{opacity:.55;cursor:default}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.panel.shake{animation:shake .4s ease}
+.img-preview{position:relative;margin-bottom:10px}
+.img-preview img{width:120px;height:90px;object-fit:cover;border-radius:10px;border:1px solid #e3e8ef;display:block}
+.img-preview button{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(23,32,43,.75);color:#fff;cursor:pointer;font-size:13px;line-height:1}
+.comp-foot{display:flex;align-items:center;gap:10px}
+.comp-foot .char{font-size:12px;color:#9aa4b2}
+.comp-foot .form-err{flex:1;margin:0}
+.mini-btn{border:1px solid #e3e8ef;background:#fff;color:#5b6b7b;border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;transition:all .25s;font-family:inherit}
+.mini-btn:hover{color:#0066cc;border-color:#bcd7f7;background:#f5faff}
+@keyframes popIn{0%{opacity:0;transform:scale(.9) translateY(-8px)}100%{opacity:1;transform:none}}
+.pop-in{animation:popIn .45s cubic-bezier(.22,.61,.36,1)}
+.fade-out{opacity:0!important;transform:scale(.92)!important;transition:opacity .3s ease,transform .3s ease}
+@media(max-width:900px){.wall{columns:2}}
+@media(max-width:600px){.wall{columns:1}.wrap{padding:32px 14px 110px}.mz-header h1{font-size:24px}.fab{right:18px;bottom:18px;height:48px;padding:0 20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mz-header">
+    <h1>碎碎念</h1>
+    <span class="mz-count" id="mzCount"></span>
+    <div class="user-chip hidden" id="mzUserChip">已登录 <button id="mzLogoutBtn">退出</button></div>
+  </header>
+  <main class="wall" id="mzWall"></main>
+  <div class="empty hidden" id="mzEmpty">还没有碎碎念</div>
+  <div class="err hidden" id="mzErrBox">加载失败 <button id="mzRetryBtn">重试</button></div>
+  <button class="load-more hidden" id="mzLoadMore">加载更多</button>
+</div>
+<button class="fab" id="mzFab">留言</button>
+
+<div class="overlay" id="mzLoginOverlay">
+  <div class="panel">
+    <h2>管理员登录</h2>
+    <input type="email" id="mzEmail" placeholder="账号（邮箱）" autocomplete="username">
+    <input type="password" id="mzPwd" placeholder="密码" autocomplete="current-password">
+    <div class="form-err" id="mzLoginErr"></div>
+    <div class="panel-actions">
+      <button class="btn-ghost" id="mzLoginCancel">取消</button>
+      <button class="btn-primary" id="mzLoginOk">登录</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="mzComposerOverlay">
+  <div class="panel">
+    <h2>写碎碎念</h2>
+    <textarea id="mzContent" maxlength="1000" placeholder="写点什么…"></textarea>
+    <div class="img-preview hidden" id="mzImgPreview"><img id="mzImgPrev" alt=""><button id="mzImgDel" title="移除配图">&times;</button></div>
+    <div class="comp-foot">
+      <span class="char" id="mzCharCount">0/1000</span>
+      <span class="form-err" id="mzCompErr"></span>
+      <button class="mini-btn" id="mzPickBtn">配图</button>
+      <button class="btn-primary" id="mzPublishBtn">发布</button>
+    </div>
+    <input type="file" id="mzFileInput" accept="image/*" style="display:none">
+  </div>
+</div>
+
+<div class="overlay" id="mzConfirmOverlay">
+  <div class="panel" style="width:min(340px,90vw)">
+    <h2>删除这条碎碎念？</h2>
+    <div class="panel-actions">
+      <button class="btn-ghost" id="mzConfirmCancel">取消</button>
+      <button class="btn-primary" id="mzConfirmOk" style="background:#e5484d">删除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var SUPABASE_URL='https://dxfxkflqcjifrjqvgzeh.supabase.co';
+var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4ZnhrZmxxY2ppZnJqcXZnemVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzM4MzcsImV4cCI6MjA5NzQ0OTgzN30.yjWjRdLT_qO3NlxqrKHJAxWFfhClDeolH1_CXRXnHRk';
+var DB_URL=SUPABASE_URL+'/rest/v1';
+var AUTH_URL=SUPABASE_URL+'/auth/v1';
+var STORAGE_URL=SUPABASE_URL+'/storage/v1';
+var BUCKET_NAME='photos';
+var PUBLIC_PREFIX=STORAGE_URL+'/object/public/'+BUCKET_NAME+'/';
+var LS_KEY='murmur_auth';
+var PAGE_SIZE=100;
+var IMG_RE=/^https:\/\/[^\s]+\/object\/public\/photos\/[A-Za-z0-9._-]+$/;
+
+var state={list:[],offset:0,done:false,loading:false,token:null,refreshTok:null,expiresAt:0,pendingImg:null,pendingPreview:null,deleteTarget:null};
+
+var ids=['wall','count','userChip','logoutBtn','empty','errBox','retryBtn','loadMore','fab','loginOverlay','email','pwd','loginErr','loginCancel','loginOk','composerOverlay','content','charCount','compErr','imgPreview','imgPrev','imgDel','pickBtn','fileInput','publishBtn','confirmOverlay','confirmCancel','confirmOk'];
+var el={};ids.forEach(function(id){el[id]=document.getElementById('mz'+id.charAt(0).toUpperCase()+id.slice(1));});
+
+function he(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtTime(iso){var d=new Date(iso);if(isNaN(d))return'';function p(n){return n<10?'0'+n:''+n;}return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());}
+function xhr(method,url,headers,body,cb){
+  var x=new XMLHttpRequest();
+  x.open(method,url,true);
+  if(headers)Object.keys(headers).forEach(function(k){x.setRequestHeader(k,headers[k]);});
+  x.onload=function(){var data=null;try{data=x.responseText?JSON.parse(x.responseText):null;}catch(e){}
+    if(x.status>=200&&x.status<300)cb(null,x.status,data);
+    else cb({status:x.status,data:data},x.status,data);};
+  x.onerror=function(){cb({status:0,network:true},0,null);};
+  x.send(body||null);
+}
+function jsonHeaders(extra){var h={'apikey':SUPABASE_KEY,'Content-Type':'application/json'};if(extra)Object.keys(extra).forEach(function(k){h[k]=extra[k];});return h;}
+
+function bindEvents(){
+  el.loginCancel.addEventListener('click',closeOverlay.bind(null,el.loginOverlay));
+  el.confirmCancel.addEventListener('click',closeOverlay.bind(null,el.confirmOverlay));
+  [el.loginOverlay,el.composerOverlay,el.confirmOverlay].forEach(function(ov){
+    ov.addEventListener('click',function(e){if(e.target===ov)closeOverlay(ov);});
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){closeOverlay(el.loginOverlay);closeOverlay(el.composerOverlay);closeOverlay(el.confirmOverlay);}
+  });
+}
+function closeOverlay(ov){ov.classList.remove('open');}
+
+function init(){bindEvents();}
+
+window.__MZ={state:state,he:he,fmtTime:fmtTime,xhr:xhr,jsonHeaders:jsonHeaders,init:init};
+init();
+})();
+</script>
+</body>
+</html>
