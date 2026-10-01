@@ -79,6 +79,13 @@ test('打包脚本：按书取图、按清单给页、只在选书后挂载', ()
 
   // 触摸翻页脚本靠这两个 aria-label 找按钮，改名会让移动端翻页失效
   assert.ok(bundle.includes('`Previous page`') && bundle.includes('`Next page`'), '翻页按钮 aria-label 被改动');
+
+  // End 键必须落到「跨页」的合法起始页：页数为偶数时 flip(l-1) 会让相册卡在 is-turning
+  assert.ok(
+    bundle.includes('flip(l-1-(l-1)%2,`bottom`)'),
+    'End 键跳末页未做奇偶对齐，页数为偶数时会把翻页按钮卡死'
+  );
+  assert.ok(!bundle.includes('flip(l-1,`bottom`)'), '仍存在未对齐的 End 键跳转');
 });
 
 test('书本扫描：文件夹即一本书，图片可直接放或放 photos 子目录', () => {
