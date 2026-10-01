@@ -42,7 +42,7 @@ test('站点接线：skip_render 放行 + 菜单与 Gallery 同级 + SVG 图标�
 
 test('页面外壳：书架 / 侧边栏结构齐全并接好 shell.css、shell.js', () => {
   const html = readPage();
-  for (const id of ['nb-shell', 'nb-sidebar', 'nb-book-list', 'nb-cards', 'nb-library-msg', 'nb-menu-btn', 'nb-drawer-mask', 'root']) {
+  for (const id of ['nb-shell', 'nb-sidebar', 'nb-book-list', 'nb-cards', 'nb-library-msg', 'nb-toolbar', 'nb-sidebar-btn', 'nb-fullscreen-btn', 'nb-drawer-mask', 'root']) {
     assert.ok(html.includes(`id="${id}"`), `缺少 #${id}`);
   }
   assert.ok(html.includes('href="shell.css"'), '未引入 shell.css');
@@ -56,6 +56,41 @@ test('页面外壳：书架 / 侧边栏结构齐全并接好 shell.css、shell.j
   const js = fs.readFileSync(path.join(NOTEBOOK, 'shell.js'), 'utf8');
   assert.ok(js.includes('books.json'), 'shell.js 未读取 books.json');
   assert.ok(js.includes('__nbMountAlbum'), 'shell.js 未调用相册挂载入口');
+});
+
+test('视图控制：两个小尺寸 SVG 图标按钮（收起书目 / 全屏）', () => {
+  const html = readPage();
+
+  // 图标必须是内联 SVG，且不能再退回文字符号
+  for (const id of ['nb-sidebar-btn', 'nb-fullscreen-btn']) {
+    const block = html.slice(html.indexOf(`id="${id}"`), html.indexOf('</button>', html.indexOf(`id="${id}"`)));
+    assert.ok(block.includes('<svg'), `#${id} 缺少内联 SVG 图标`);
+    assert.ok(block.includes('viewBox="0 0 24 24"'), `#${id} 的 SVG 缺少 viewBox`);
+    assert.ok(!/[\u2630\u25a1\u26f6]/.test(block), `#${id} 仍在用文字符号当图标`);
+  }
+
+  // 尺寸要克制：按钮 32px、图标 16px
+  const css = fs.readFileSync(path.join(NOTEBOOK, 'shell.css'), 'utf8');
+  const btn = /\.nb-icon-btn\s*\{[^}]*\}/.exec(css);
+  assert.ok(btn, 'shell.css 缺少 .nb-icon-btn 样式');
+  assert.match(btn[0], /width:\s*32px/, '图标按钮宽度应为 32px');
+  assert.match(btn[0], /height:\s*32px/, '图标按钮高度应为 32px');
+  const ico = /\.nb-ico\s*\{[^}]*\}/.exec(css);
+  assert.ok(ico, 'shell.css 缺少 .nb-ico 样式');
+  assert.match(ico[0], /width:\s*16px/, '图标宽度应为 16px');
+  assert.match(ico[0], /height:\s*16px/, '图标高度应为 16px');
+
+  // 收起侧边栏：宽屏用折叠类滑出，状态要能跨页保存
+  assert.match(css, /\.is-sidebar-collapsed\s+#nb-sidebar\s*\{[^}]*margin-left/, 'shell.css 缺少侧边栏收起规则');
+  const js = fs.readFileSync(path.join(NOTEBOOK, 'shell.js'), 'utf8');
+  assert.ok(js.includes('is-sidebar-collapsed'), 'shell.js 未实现侧边栏收起');
+  assert.ok(js.includes('localStorage.setItem'), '侧边栏状态未持久化，换一本书就会重新展开');
+  assert.ok(html.includes('nb.sidebar'), '页面缺少首屏读取折叠状态的脚本（会闪一下展开态）');
+
+  // 全屏：用 Fullscreen API，图标随状态切换
+  assert.ok(js.includes('requestFullscreen'), 'shell.js 未实现全屏按钮');
+  assert.ok(js.includes('exitFullscreen'), 'shell.js 未实现退出全屏');
+  assert.match(css, /\.is-fullscreen\s+\.nb-ico-exit/, 'shell.css 缺少全屏图标的状态切换');
 });
 
 test('打包脚本：按书取图、按清单给页、只在选书后挂载', () => {

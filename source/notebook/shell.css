@@ -321,49 +321,128 @@
   }
 }
 
-/* ---------------- 窄屏：侧边栏收成抽屉 ---------------- */
+/* ---------------- 左上角视图控制（收起书目 / 全屏） ----------------
+   放在 #nb-main 内部、而不是固定到窗口：侧边栏展开时它跟着主区域右移，
+   收起时自然落到窗口左上角，两种状态下都不会压住侧边栏标题。
+   按钮 32×32、图标 16×16，保持克制。 */
 
-.nb-menu-btn {
-  display: none;
-  place-items: center;
-  position: fixed;
+.nb-toolbar {
+  position: absolute;
   top: 14px;
   left: 14px;
-  z-index: 70;
-  width: 38px;
-  height: 38px;
+  z-index: 50;
+  display: flex;
+  gap: 6px;
+}
+
+.nb-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
   padding: 0;
   background: #e5e2d9d9;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 9px;
   color: var(--ink);
-  font-size: 15px;
-  line-height: 1;
   cursor: pointer;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
 }
 
-.nb-menu-btn:active {
-  transform: scale(0.96);
+.nb-icon-btn:hover {
+  background: #f2efe6;
+  border-color: #b9b3a4;
+}
+
+.nb-icon-btn:active {
+  transform: scale(0.95);
+}
+
+.nb-icon-btn:focus-visible {
+  outline: 2px solid #4a6fa5;
+  outline-offset: 2px;
+}
+
+.nb-icon-btn[hidden] {
+  display: none;
+}
+
+.nb-ico {
+  display: block;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 图标按状态切换：桌面默认展开、窄屏默认收起，各显示一半符号 */
+.nb-ico-expand,
+.nb-ico-exit {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .nb-ico-expand {
+    display: block;
+  }
+
+  .nb-ico-collapse {
+    display: none;
+  }
+}
+
+#nb-shell.is-sidebar-collapsed .nb-ico-collapse,
+#nb-shell.is-drawer-open .nb-ico-collapse {
+  display: none;
+}
+
+#nb-shell.is-sidebar-collapsed .nb-ico-expand,
+#nb-shell.is-drawer-open .nb-ico-expand {
+  display: block;
+}
+
+#nb-shell.is-fullscreen .nb-ico-enter {
+  display: none;
+}
+
+#nb-shell.is-fullscreen .nb-ico-exit {
+  display: block;
 }
 
 .nb-drawer-mask {
   display: none;
 }
 
-/* 书架视图本身就是书目，不需要抽屉按钮 */
-#nb-main:not(.is-reading) .nb-menu-btn {
-  display: none;
+/* 相册顶栏左侧的品牌与侧边栏标题重复，且工具条就落在那一格，整站隐藏
+   （用 visibility 而不是 none，保证顶栏三栏栅格不变、标题仍在正中） */
+#root .brand-lockup {
+  visibility: hidden;
 }
 
+/* ---------------- 桌面端：收起 / 展开侧边栏 ---------------- */
+
 @media (min-width: 1001px) {
-  /* 常驻侧边栏已经显示了「笔 / 笔记本」，相册顶栏左侧的品牌不必重复
-     （用 hidden 而不是 none，保证顶栏三栏栅格不变，标题仍在正中） */
-  #root .brand-lockup {
-    visibility: hidden;
+  #nb-sidebar {
+    margin-left: 0;
+    transition: margin-left 0.35s cubic-bezier(0.2, 0.7, 0.1, 1);
+  }
+
+  #nb-shell.is-sidebar-collapsed #nb-sidebar {
+    margin-left: calc(var(--nb-side-w) * -1);
+  }
+
+  /* 收起后书架内容贴到最左，给工具条让位 */
+  #nb-shell.is-sidebar-collapsed #nb-library {
+    padding-left: 104px;
   }
 }
+
+/* ---------------- 窄屏：侧边栏收成抽屉 ---------------- */
 
 @media (max-width: 1000px) {
   #nb-sidebar {
@@ -382,10 +461,7 @@
     transform: none;
   }
 
-  .nb-menu-btn {
-    display: grid;
-  }
-
+  /* 抽屉(z 60)盖住工具条(z 50)：点工具条位置即点遮罩，顺手关闭抽屉 */
   .nb-drawer-mask {
     display: block;
     position: fixed;
@@ -402,19 +478,9 @@
     pointer-events: auto;
   }
 
-  /* 书架视图不会显示抽屉按钮（见上方规则），无需为它留出顶部空间 */
+  /* 书架的标题行给工具条让位 */
   #nb-library {
-    padding: 34px 20px 40px;
-  }
-
-  /* 抽屉按钮固定在左上角，把侧边栏标题让到它右边 */
-  #nb-sidebar .nb-side-head {
-    padding-left: 46px;
-  }
-
-  /* 相册顶栏给抽屉按钮让位 */
-  #root .topbar {
-    padding-left: 46px;
+    padding: 64px 20px 40px;
   }
 }
 
@@ -435,7 +501,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   #nb-sidebar,
-  .nb-menu-btn,
+  .nb-icon-btn,
   .nb-card,
   .nb-book-link {
     transition: none;

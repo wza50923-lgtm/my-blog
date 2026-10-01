@@ -20,9 +20,13 @@
     cards: document.getElementById('nb-cards'),
     count: document.getElementById('nb-side-count'),
     msg: document.getElementById('nb-library-msg'),
-    menuBtn: document.getElementById('nb-menu-btn'),
+    sidebarBtn: document.getElementById('nb-sidebar-btn'),
+    fullscreenBtn: document.getElementById('nb-fullscreen-btn'),
     mask: document.getElementById('nb-drawer-mask')
   };
+
+  var SIDEBAR_KEY = 'nb.sidebar';
+  var DESKTOP_MIN_WIDTH = 1000;
 
   var requestedId = (new URLSearchParams(window.location.search).get('book') || '').trim();
 
@@ -125,30 +129,108 @@
     }
   }
 
+  function isWide() {
+    return window.innerWidth > DESKTOP_MIN_WIDTH;
+  }
+
+  /** 当前侧边栏是否可见：宽屏看折叠类，窄屏看抽屉类 */
+  function sidebarVisible() {
+    return isWide()
+      ? !dom.shell.classList.contains('is-sidebar-collapsed')
+      : dom.shell.classList.contains('is-drawer-open');
+  }
+
+  function syncSidebarButton() {
+    if (!dom.sidebarBtn) return;
+    var visible = sidebarVisible();
+    dom.sidebarBtn.setAttribute('aria-expanded', visible ? 'true' : 'false');
+    dom.sidebarBtn.setAttribute('aria-label', visible ? '隐藏笔记书目' : '显示笔记书目');
+  }
+
+  function setCollapsed(collapsed) {
+    dom.shell.classList.toggle('is-sidebar-collapsed', collapsed);
+    try {
+      // 换书是整页跳转，状态存起来才不会每次都被展开
+      window.localStorage.setItem(SIDEBAR_KEY, collapsed ? 'hidden' : 'shown');
+    } catch (err) {
+      /* 隐私模式下 localStorage 不可用，忽略 */
+    }
+    syncSidebarButton();
+  }
+
   function openDrawer() {
     dom.shell.classList.add('is-drawer-open');
-    if (dom.menuBtn) dom.menuBtn.setAttribute('aria-expanded', 'true');
+    syncSidebarButton();
   }
 
   function closeDrawer() {
     dom.shell.classList.remove('is-drawer-open');
-    if (dom.menuBtn) dom.menuBtn.setAttribute('aria-expanded', 'false');
+    syncSidebarButton();
   }
 
-  function bindDrawer() {
-    if (dom.menuBtn) {
-      dom.menuBtn.addEventListener('click', function () {
-        if (dom.shell.classList.contains('is-drawer-open')) closeDrawer();
-        else openDrawer();
-      });
+  function toggleSidebar() {
+    if (isWide()) {
+      setCollapsed(!dom.shell.classList.contains('is-sidebar-collapsed'));
+    } else if (dom.shell.classList.contains('is-drawer-open')) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
+  }
+
+  function fullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function fullscreenSupported() {
+    var el = document.documentElement;
+    return !!(el.requestFullscreen || el.webkitRequestFullscreen);
+  }
+
+  function syncFullscreenButton() {
+    if (!dom.fullscreenBtn) return;
+    var on = !!fullscreenElement();
+    dom.shell.classList.toggle('is-fullscreen', on);
+    dom.fullscreenBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    dom.fullscreenBtn.setAttribute('aria-label', on ? '退出全屏' : '全屏显示');
+  }
+
+  function toggleFullscreen() {
+    var el = document.documentElement;
+    var exit = document.exitFullscreen || document.webkitExitFullscreen;
+    var enter = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (fullscreenElement()) {
+      if (exit) exit.call(document);
+    } else if (enter) {
+      var result = enter.call(el);
+      if (result && typeof result.then === 'function') {
+        result.then(syncFullscreenButton, syncFullscreenButton);
+      }
+    }
+  }
+
+  function bindControls() {
+    if (dom.sidebarBtn) dom.sidebarBtn.addEventListener('click', toggleSidebar);
+    if (dom.fullscreenBtn) {
+      if (fullscreenSupported()) {
+        dom.fullscreenBtn.addEventListener('click', toggleFullscreen);
+      } else {
+        // 浏览器不支持全屏（如部分 iOS 浏览器）就干脆不显示这个按钮
+        dom.fullscreenBtn.hidden = true;
+      }
     }
     if (dom.mask) dom.mask.addEventListener('click', closeDrawer);
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') closeDrawer();
     });
+    document.addEventListener('fullscreenchange', syncFullscreenButton);
+    document.addEventListener('webkitfullscreenchange', syncFullscreenButton);
     window.addEventListener('resize', function () {
-      if (window.innerWidth > 1000) closeDrawer();
+      if (isWide()) closeDrawer();
+      syncSidebarButton();
     });
+    syncSidebarButton();
+    syncFullscreenButton();
   }
 
   function afterBooksLoaded(books, error) {
@@ -203,7 +285,7 @@
   }
 
   function init() {
-    bindDrawer();
+    bindControls();
     fetch(BOOKS_URL, { cache: 'no-store' })
       .then(function (response) {
         if (!response.ok) throw new Error('HTTP ' + response.status);
