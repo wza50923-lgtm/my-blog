@@ -31,6 +31,7 @@ i18n_dir: :lang
 skip_render:
   - 'gallery/**'
   - 'murmurs/**'
+  - 'notebook/**'
 
 # Writing
 new_post_name: :title.md # File name of new posts

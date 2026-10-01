@@ -1,3 +1,7 @@
 node_modules/
 public/
 db.json
+
+# 翻页笔记本里的大体积原始 PDF 扫描件（共约 68MB）。
+# 页面只读取按编号命名的图片，PDF 不参与显示；确需入库请用 git add -f 强制添加。
+source/notebook/**/*.pdf

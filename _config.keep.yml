@@ -12,6 +12,7 @@ menu:
   home: / || fa-solid fa-home
   archives: /archives || fa-solid fa-box-archive
   photos: /gallery || fa-solid fa-image
+  笔记: /notebook || note-icon
   碎碎念: /murmurs || zzn-icon
 
 # 首页首屏背景图（需 enable: true 才会显示）
